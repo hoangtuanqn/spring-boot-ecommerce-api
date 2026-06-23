@@ -1,4 +1,4 @@
-package java.local.mstsoftware;
+package mst.local.mstsoftware;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

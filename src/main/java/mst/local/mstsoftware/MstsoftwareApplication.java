@@ -1,4 +1,4 @@
-package java.local.mstsoftware;
+package mst.local.mstsoftware;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
