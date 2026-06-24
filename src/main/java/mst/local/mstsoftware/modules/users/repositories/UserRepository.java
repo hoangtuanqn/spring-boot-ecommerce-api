@@ -1,10 +1,11 @@
 package mst.local.mstsoftware.modules.users.repositories;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import mst.local.mstsoftware.repositories.BaseRepository;
+import mst.local.mstsoftware.modules.users.entities.User;
 
 @Repository
-public class UserRepository extends BaseRepository {
-    
+public interface UserRepository extends JpaRepository<User, Long> {
+
 }
