@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 
 @Component
@@ -29,15 +30,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (isTableEmpty()) {
             String password = passwordEncoder.encode("password");
-            // String sqlString = "INSERT INTO users (name, email, password,
-            // user_catalogues_id, phone) VALUES (?, ?, ?, ?, ?)";
-            // entityManager.createNativeQuery(sqlString)
-            // .setParameter(1, "Phạm Hoàng Tuấn")
-            // .setParameter(2, "phamhoangtuanqn@gmail.com")
-            // .setParameter(3, password)
-            // .setParameter(4, 1)
-            // .setParameter(5, "0812665001")
-            // .executeUpdate();
+            User user = new User("Phạm Hoàng Tuấn", "phamhoangtuanqn@gmail.com", password, 1L, "0812665001");
+            userRepository.save(user);
 
         }
     }
