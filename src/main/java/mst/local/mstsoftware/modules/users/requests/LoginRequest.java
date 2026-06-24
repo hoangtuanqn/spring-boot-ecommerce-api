@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.modules.users.dtos;
+package mst.local.mstsoftware.modules.users.requests;
 
 public class LoginRequest {
     private String email;
