@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("v1/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final UserServiceInterface userService;
@@ -25,7 +25,6 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<LoginResource> login(@Valid @RequestBody LoginRequest request) {
-
         LoginResource auth = userService.authenticate(request);
         return ResponseEntity.ok(auth);
     }

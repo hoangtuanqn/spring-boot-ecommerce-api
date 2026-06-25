@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // 1. Route AUTH - No JWT
-                        .requestMatchers("/api/v1/auth/*").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         // 2. Public API
                         .requestMatchers("/api/v1/products").permitAll()
                         .anyRequest().authenticated())

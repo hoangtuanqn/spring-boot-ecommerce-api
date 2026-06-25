@@ -1,8 +1,14 @@
 package mst.local.mstsoftware.modules.users.entities;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Getter
@@ -10,7 +16,7 @@ import lombok.*;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,5 +53,15 @@ public class User {
     @PreUpdate
     protected void onUpdated() {
         updatedAt = LocalDateTime.now();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 }

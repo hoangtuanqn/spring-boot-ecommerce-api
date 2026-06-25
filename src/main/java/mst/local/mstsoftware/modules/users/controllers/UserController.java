@@ -1,6 +1,8 @@
 package mst.local.mstsoftware.modules.users.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,8 +29,8 @@ public class UserController {
     }
 
     @GetMapping("me")
-    public ResponseEntity<?> me() {
-        String email = "phamhoangtuanqn@gmail.com";
+    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 

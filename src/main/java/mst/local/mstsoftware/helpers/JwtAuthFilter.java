@@ -26,20 +26,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+       
 
         // 1. Lấy token từ header
         String authHeader = request.getHeader("Authorization");
 
         // 2. Không có token hoặc không đúng format -> bỏ qua, đi tiếp
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response); // cho qua, không làm gì cả
             return;
         }
 
         // 3. Extract Token
         String token = authHeader.substring(7);
+        // System.out.println("Token: [" + token + "]");
         String email = jwtService.extractEmail(token);
+        // System.out.println("Email: [" + email + "]");
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             if (jwtService.isTokenValid(token, userDetails)) {
@@ -49,6 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // truy xuất metadata
                                                                                                   // request
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("Auth: " + SecurityContextHolder.getContext().getAuthentication());
 
             }
         }
