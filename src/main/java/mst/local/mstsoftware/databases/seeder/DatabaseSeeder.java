@@ -1,6 +1,5 @@
 package mst.local.mstsoftware.databases.seeder;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,12 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (isTableEmpty()) {
             String password = passwordEncoder.encode("password");
-            User user = new User("Phạm Hoàng Tuấn", "phamhoangtuanqn@gmail.com", password, 1L, "0812665001");
+            User user = new User();
+            user.setName("Phạm Hoàng Tuấn");
+            user.setEmail("phamhoangtuanqn@gmail.com");
+            user.setPassword(password);
+            user.setUserCataloguesId(1L);
+            user.setPhone("0812665001");
             userRepository.save(user);
 
         }
