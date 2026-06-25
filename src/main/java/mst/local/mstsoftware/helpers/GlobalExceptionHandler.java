@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,4 +23,11 @@ public class GlobalExceptionHandler {
         ErrorResource errorResource = new ErrorResource("Xảy ra lỗi trong quá trình validation", errors);
         return ResponseEntity.badRequest().body(errorResource);
     }
+
+    // xử lý lỗi login
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> handleCredentials(BadCredentialsException ex) {
+        return ResponseEntity.status(401).body(new ErrorResource(ex.getMessage(), null));
+    }
+
 }

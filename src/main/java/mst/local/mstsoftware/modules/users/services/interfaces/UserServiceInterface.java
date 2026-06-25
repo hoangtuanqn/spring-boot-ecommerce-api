@@ -4,5 +4,5 @@ import mst.local.mstsoftware.modules.users.requests.LoginRequest;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;
 
 public interface UserServiceInterface {
-    LoginResource login(LoginRequest request);
+    LoginResource authenticate(LoginRequest request);
 }

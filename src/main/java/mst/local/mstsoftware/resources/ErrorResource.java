@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class ErrorResource {
     private String message;
-    private Map<String, String> errros;
+    private Map<String, String> errors;
 }
