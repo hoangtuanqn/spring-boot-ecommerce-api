@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.users.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import mst.local.mstsoftware.modules.users.requests.LoginRequest;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserServiceInterface;
@@ -23,7 +24,7 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResource> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResource> login(@Valid @RequestBody LoginRequest request) {
 
         LoginResource auth = userService.login(request);
         return ResponseEntity.ok(auth);

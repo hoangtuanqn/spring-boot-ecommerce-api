@@ -16,8 +16,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Override
     public LoginResource login(LoginRequest request) {
         try {
-            // String email = request.getEmail();
-            // String passowrd = request.getPassword();
+          
             String token = "MSTSoftware";
             UserResource user = new UserResource(1L, "phamhoangtuanqn@gmail.com");
             return new LoginResource(token, user);
