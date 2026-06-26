@@ -1,6 +1,5 @@
 package mst.local.mstsoftware.services;
 
-import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
@@ -17,27 +16,29 @@ import mst.local.mstsoftware.config.JwtConfig;
 
 @Service
 public class JwtService {
-    private final JwtConfig jwtConfig;
-    private final Key key;
+    private final Long expirationTime;
+    private final String issuer;
+    private final SecretKey key;
 
     public JwtService(JwtConfig jwtConfig) {
-        this.jwtConfig = jwtConfig;
+        expirationTime = jwtConfig.getExpirationTime();
+        issuer = jwtConfig.getIssuer();
         this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtConfig.getSecretKey()));
     }
 
     public String generateToken(Long userId, String email) {
         Date now = new Date();
-        Date expiredAt = new Date(now.getTime() + jwtConfig.getExpirationTime());
+        Date expiredAt = new Date(now.getTime() + expirationTime);
 
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .subject(email)
-                .claim("userId", String.valueOf(userId))
+                .claim("userId", userId)
+                .issuer(issuer)
                 .issuedAt(now)
                 .expiration(expiredAt)
                 .signWith(key) // tự động chọn thuật toán HS256, HS384, ... theo độ dài key của mình cho phù
                                // hợp với đầu vào của từng thuật toán
                 .compact();
-        return token;
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -54,12 +55,12 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    public Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) this.key)
                 .build()

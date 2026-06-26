@@ -1,6 +1,9 @@
 spring:
   application:
     name: mstsoftware
+  output:
+    ansi:
+      enabled: always
   logging:
     level:
       org.flywaydb: DEBUG
@@ -17,6 +20,8 @@ spring:
     enabled: true
     locations: classpath:database/migrations
     baseline-on-migrate: true
+
 jwt:
-    secret: a1M8O206XTw5ITl6NzReN3BKTTNVaWY1L1dnfWFPQjIjaysvV2F3Tm5fZA== #nên lưu dạng base64
-    expiration: 86400000
+  secret: a1M8O206XTw5ITl6NzReN3BKTTNVaWY1L1dnfWFPQjIjaysvV2F3Tm5fZA==
+  expiration: 86400000
+  issuer: https://mstsoftware.vn/

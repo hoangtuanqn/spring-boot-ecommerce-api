@@ -3,7 +3,10 @@ package mst.local.mstsoftware.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.Getter;
+
 @Configuration
+@Getter
 public class JwtConfig {
     @Value("${jwt.secret}")
     private String secretKey;
@@ -11,11 +14,6 @@ public class JwtConfig {
     @Value("${jwt.expiration}")
     private Long expirationTime;
 
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public Long getExpirationTime() {
-        return expirationTime;
-    }
+    @Value("${jwt.issuer}")
+    private String issuer;
 }
