@@ -1,30 +1,22 @@
 package mst.local.mstsoftware.modules.users.resources;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Builder
+@Getter
+@AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResource {
     private final Long id;
     private final String email;
     private final String name;
+    private final String phone;
 
     public UserResource(Long id, String email) {
-        this(id, email, "");
+        this(id, email, null, null);
     }
-
-    public UserResource(Long id, String email, String name) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
 }
