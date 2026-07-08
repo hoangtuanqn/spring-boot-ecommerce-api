@@ -39,7 +39,7 @@ public class UserService extends BaseService implements UserServiceInterface {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
         String token = jwtService.generateToken(user.getId(), email);
-        UserResource userResource = new UserResource(user.getId(), email);
+        UserResource userResource = new UserResource(user.getId(), email, user.getName(), user.getPhone());
         return new LoginResource(token, userResource);
 
     }
