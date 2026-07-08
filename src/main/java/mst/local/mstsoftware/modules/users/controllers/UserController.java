@@ -34,8 +34,12 @@ public class UserController {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
 
-        UserResource userResource = new UserResource(user.getId(), user.getEmail(), user.getName());
-        SuccessResource<UserResource> successResource = new SuccessResource("SUCCESS", userResource);
+        UserResource userResource = UserResource.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
+        SuccessResource<UserResource> successResource = new SuccessResource<>("SUCCESS", userResource);
         return ResponseEntity.ok(successResource);
     }
 }
