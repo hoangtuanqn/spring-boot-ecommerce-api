@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.modules.users.services.impl.BlacklistService;
 import mst.local.mstsoftware.resources.ErrorResource;
 import mst.local.mstsoftware.services.JwtService;
 
@@ -31,8 +32,10 @@ import mst.local.mstsoftware.services.JwtService;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
+    private final BlacklistService blacklistService;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
+    public static final String TOKEN_ATTRIBUTE = "jwt_token";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -49,6 +52,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 3. Extract Token
         String token = authHeader.substring(7);
+        if (blacklistService.isTokenBlackList(token)) {
+            writeErrorResponse(response, "Token của bạn đã bị thu hồi.");
+            return;
+        }
+        request.setAttribute(TOKEN_ATTRIBUTE, token);
         try {
             String email = jwtService.extractEmail(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -61,12 +69,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                                                                                       // metadata
                                                                                                       // request
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    System.out.println("Auth: " + SecurityContextHolder.getContext().getAuthentication());
+                    // System.out.println("Auth: " +
+                    // SecurityContextHolder.getContext().getAuthentication());
 
                 }
             }
         } catch (MalformedJwtException e) {
             writeErrorResponse(response, "Định dạng token không hợp lệ");
+            return;
         } catch (ExpiredJwtException e) {
             writeErrorResponse(response, "Token đã hết hạn");
             return;
@@ -90,6 +100,5 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(error));
-
     }
 }
