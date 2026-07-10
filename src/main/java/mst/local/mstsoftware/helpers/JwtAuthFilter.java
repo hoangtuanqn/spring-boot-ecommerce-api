@@ -1,6 +1,7 @@
 package mst.local.mstsoftware.helpers;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -30,12 +32,19 @@ import mst.local.mstsoftware.services.JwtService;
 @Component
 @Slf4j // cài sẵn logger
 @RequiredArgsConstructor
+
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final BlacklistService blacklistService;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
     public static final String TOKEN_ATTRIBUTE = "jwt_token";
+
+    private static final Map<Class<? extends JwtException>, String> JWT_ERRORS_MESSAGES = Map.of(
+            MalformedJwtException.class, "Định dạng token không hợp lệ",
+            ExpiredJwtException.class, "Token đã hết hạn",
+            SignatureException.class, "Token không được tạo bởi hệ thống này",
+            UnsupportedJwtException.class, "Loại token không được hỗ trợ");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -69,23 +78,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                                                                                       // metadata
                                                                                                       // request
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    // System.out.println("Auth: " +
-                    // SecurityContextHolder.getContext().getAuthentication());
 
                 }
             }
-        } catch (MalformedJwtException e) {
-            writeErrorResponse(response, "Định dạng token không hợp lệ");
-            return;
-        } catch (ExpiredJwtException e) {
-            writeErrorResponse(response, "Token đã hết hạn");
-            return;
-        } catch (SignatureException e) {
-            writeErrorResponse(response, "Token không được tạo bởi hệ thống này");
-            return;
-        } catch (UnsupportedJwtException e) {
-            writeErrorResponse(response, "Loại token không được hỗ trợ");
-            return;
+        } catch (JwtException e) {
+            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token");
+            writeErrorResponse(response, message);
+
         } catch (Exception e) {
             writeErrorResponse(response, "Lỗi xác thực token");
             return;
