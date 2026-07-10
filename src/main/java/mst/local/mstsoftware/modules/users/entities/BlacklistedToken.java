@@ -29,8 +29,8 @@ public class BlacklistedToken {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(nullable = false, unique = true)
-    private String token;
+    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
+    private String tokenHash;
 
     @Column(name = "expiry_date", nullable = false)
     private LocalDateTime expiryDate;

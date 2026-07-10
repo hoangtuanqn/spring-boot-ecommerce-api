@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,6 +28,11 @@ public class GlobalExceptionHandler {
     // xử lý lỗi login
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleCredentials(BadCredentialsException ex) {
+        return ResponseEntity.status(401).body(new ErrorResource(ex.getMessage(), null));
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<?> handleMissingToken(AuthenticationCredentialsNotFoundException ex) {
         return ResponseEntity.status(401).body(new ErrorResource(ex.getMessage(), null));
     }
 
