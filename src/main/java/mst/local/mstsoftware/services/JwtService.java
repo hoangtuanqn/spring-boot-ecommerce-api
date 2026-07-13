@@ -2,6 +2,7 @@ package mst.local.mstsoftware.services;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -53,6 +54,10 @@ public class JwtService {
         return expiration.before(new Date());
     }
 
+    public String generateRefreshTokenRaw() {
+        return UUID.randomUUID().toString() + UUID.randomUUID().toString();
+    }
+
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -60,11 +65,6 @@ public class JwtService {
     public Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("userId", Long.class);
-    }
-
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
     }
 
     public Claims extractAllClaims(String token) {
@@ -75,4 +75,10 @@ public class JwtService {
                 .getPayload();
 
     }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
 }
