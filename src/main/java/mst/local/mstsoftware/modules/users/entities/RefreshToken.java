@@ -1,6 +1,7 @@
 package mst.local.mstsoftware.modules.users.entities;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,20 +21,25 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "blacklisted_tokens")
-public class BlacklistedToken {
+@Table(name = "refresh_tokens")
+public class RefreshToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
     private String tokenHash;
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
+
+    @Column(nullable = false)
+    private boolean revoked = false;
+
+    @Column(name = "replace_by_token_id")
+    private String replacedByTokenId;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

@@ -26,6 +26,7 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtConfig.getSecretKey()));
     }
 
+    // tạo ra jwt
     public String generateToken(Long userId, String email) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + expirationTime);
@@ -46,6 +47,7 @@ public class JwtService {
         return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
+    // check token còn hsd k
     public boolean isTokenExpired(String token) {
         Date expiration = extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
