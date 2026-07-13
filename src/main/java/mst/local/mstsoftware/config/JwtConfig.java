@@ -16,4 +16,7 @@ public class JwtConfig {
 
     @Value("${jwt.issuer}")
     private String issuer;
+
+    @Value("${jwt.refresh-token-ttl-days}")
+    private Integer refreshTokenTTLDays = 14;
 }

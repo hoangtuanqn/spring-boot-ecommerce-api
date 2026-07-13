@@ -1,20 +1,11 @@
 package mst.local.mstsoftware.modules.users.resources;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class LoginResource {
-    private final String token;
+    private final String accessToken;
     private final UserResource user;
-
-    public LoginResource(String token, UserResource user) {
-        this.token = token;
-        this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public UserResource getUser() {
-        return user;
-    }
-
 }

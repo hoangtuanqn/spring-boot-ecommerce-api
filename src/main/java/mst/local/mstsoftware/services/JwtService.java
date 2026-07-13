@@ -55,7 +55,7 @@ public class JwtService {
     }
 
     public String generateRefreshTokenRaw() {
-        return UUID.randomUUID().toString() + UUID.randomUUID().toString();
+        return UUID.randomUUID().toString();
     }
 
     public String extractEmail(String token) {

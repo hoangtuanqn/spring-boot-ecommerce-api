@@ -1,7 +1,6 @@
 package mst.local.mstsoftware.modules.users.entities;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "refresh_tokens")
 public class RefreshToken {
 
@@ -28,17 +29,20 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
     private String tokenHash;
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean revoked = false;
 
-    @Column(name = "replace_by_token_id")
+    @Column(name = "replaced_by_token_id")
     private String replacedByTokenId;
 
     @Column(name = "created_at", updatable = false)
