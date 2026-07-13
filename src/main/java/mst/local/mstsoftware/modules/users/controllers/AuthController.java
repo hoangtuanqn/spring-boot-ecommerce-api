@@ -3,7 +3,9 @@ package mst.local.mstsoftware.modules.users.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import mst.local.mstsoftware.helpers.JwtAuthFilter;
 import mst.local.mstsoftware.modules.users.requests.LoginRequest;
@@ -28,8 +30,15 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResource> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResource> login(@Valid @RequestBody LoginRequest request, HttpServletResponse resonse) {
         LoginResource auth = userService.authenticate(request);
+        Cookie cookie = new Cookie("token", auth.getToken());
+        cookie.setMaxAge(14 * 24 * 60 * 60);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        resonse.setHeader("Access-Control-Allow-Credentials", "true");
+        resonse.addCookie(cookie);
         return ResponseEntity.ok(auth);
     }
 
