@@ -1,28 +1,33 @@
 package mst.local.mstsoftware.modules.users.controllers;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
+import mst.local.mstsoftware.modules.users.resources.LoginResource;
+import mst.local.mstsoftware.modules.users.services.impl.RefreshTokenService;
+import mst.local.mstsoftware.services.JwtService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 import mst.local.mstsoftware.modules.users.resources.UserResource;
 import mst.local.mstsoftware.resources.SuccessResource;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import java.time.Duration;
+import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
+@AllArgsConstructor
 public class UserController {
 
     private final UserRepository userRepository;
-
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public String getMethodName(@RequestParam String param) {
         return new String();
@@ -32,7 +37,7 @@ public class UserController {
     public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
 
         UserResource userResource = UserResource.builder()
                 .id(user.getId())
@@ -41,5 +46,24 @@ public class UserController {
                 .build();
         SuccessResource<UserResource> successResource = new SuccessResource<>("SUCCESS", userResource);
         return ResponseEntity.ok(successResource);
+    }
+
+    @PostMapping("refresh")
+    public ResponseEntity<?> refresh(@CookieValue("refresh_token") String rawRefreshToken) {
+       var result = refreshTokenService.rotateToken(rawRefreshToken);
+        User user = userRepository.findById(result.userId())
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
+        String newAccessToken = jwtService.generateToken(result.userId(), user.getEmail());
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", result.newRefreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ofDays(14))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new LoginResource(newAccessToken, null));
     }
 }
