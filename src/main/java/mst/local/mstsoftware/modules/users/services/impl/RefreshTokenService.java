@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.users.services.impl;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
         String token = jwtService.generateRefreshTokenRaw();
         String tokenHash = utils.hash(token);
         RefreshToken entity = RefreshToken.builder()
-                .tokenHash(tokenHash)
+                .tokenHash(tokenHash) // token đã hash
                 .userId(userId)
                 .expiryDate(Instant.now().plus(JwtConfig.getRefreshTokenTTLDays(), ChronoUnit.DAYS))
                 .revoked(false)
@@ -40,8 +41,22 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
 
     @Override
     public RefreshResult rotateToken(String rawToken) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'rotateToken'");
+        String hash = utils.hash(rawToken);
+        RefreshToken existing = repository.findByTokenHash(hash).orElseThrow(() -> new BadCredentialsException("Refresh token không hợp lệ!"));
+        if(existing.isRevoked()) {
+            // revoked hết tất cả những refresh token của người dùng
+            repository.revokeAllRefreshTokenByUser(existing.getUserId());
+            log.error("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
+            throw new BadCredentialsException("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
+        }
+        if (existing.getExpiryDate().isBefore(Instant.now())) {
+            throw new BadCredentialsException("Refresh token đã hết hạn.");
+        }
+        existing.setRevoked(true);
+        String newRaw = this.issueRefreshToken(existing.getUserId());
+        existing.setReplacedByTokenId(newRaw);
+        repository.save(existing);
+        return new RefreshResult(existing.getUserId(), newRaw);
     }
 
 }
