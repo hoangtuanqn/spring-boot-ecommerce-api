@@ -5,7 +5,11 @@ public interface RefreshTokenServiceInterface {
 
     public RefreshResult rotateToken(String rawToken);
 
+    public void revokeToken(String rawToken);
+
     public record RefreshResult(Long userId, String newRefreshToken) {
     }
-    public record IssuedToken(String rawToken, Long tokenId) {}
+
+    public record IssuedToken(String rawToken, Long tokenId) {
+    }
 }
