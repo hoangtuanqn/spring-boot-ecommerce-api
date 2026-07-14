@@ -4,8 +4,9 @@ CREATE TABLE refresh_tokens(
     token_hash VARCHAR(64) NOT NULL UNIQUE,
     expiry_date TIMESTAMP NOT NULL, 
     revoked TINYINT(1) DEFAULT 0, 
-    replaced_by_token_id VARCHAR(36) NULL,
+    replaced_by_token_id BIGINT UNSIGNED NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (replaced_by_token_id) REFERENCES refresh_tokens(id)
 )
