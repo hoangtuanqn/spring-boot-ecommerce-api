@@ -36,7 +36,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/") // chỉ gửi kèm khi gọi đúng endpoint refresh
+                .path("/")
                 .maxAge(Duration.ofDays(14))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());

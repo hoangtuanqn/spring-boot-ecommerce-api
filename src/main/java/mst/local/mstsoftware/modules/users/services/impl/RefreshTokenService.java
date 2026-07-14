@@ -54,7 +54,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
     @Override
     @Transactional
     public void revokeToken(String rawToken) {
-        RefreshToken existing = repository.findByTokenHash(utils.hash(rawToken)).orElseThrow(() -> new BadCredentialsException("Refresh token không hợp lệ!"));
+        RefreshToken existing = repository.findByTokenHash(utils.hash(rawToken)).orElseThrow(() -> new BadCredentialsException("Refresh token không hợp lệ."));
         this.checkIsRevoked(existing);
         this.checkExpiryDate(existing);
         existing.setRevoked(true);
@@ -66,13 +66,13 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
             // revoked hết tất cả những refresh token của người dùng
             repository.revokeAllRefreshTokenByUser(entity.getUserId());
             log.error("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
-            throw new SecurityException("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
+            throw new SecurityException("Refresh token không hợp lệ.");
         }
     }
 
     private void checkExpiryDate(RefreshToken entity) {
         if (entity.getExpiryDate().isBefore(Instant.now())) {
-            throw new BadCredentialsException("Refresh token đã hết hạn.");
+            throw new BadCredentialsException("Refresh token không hợp lệ.");
         }
     }
 }
