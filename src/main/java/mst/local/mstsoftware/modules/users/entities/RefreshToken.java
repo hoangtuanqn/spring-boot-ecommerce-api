@@ -43,7 +43,7 @@ public class RefreshToken {
     private boolean revoked = false;
 
     @Column(name = "replaced_by_token_id")
-    private String replacedByTokenId;
+    private Long replacedByTokenId;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
