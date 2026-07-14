@@ -5,6 +5,6 @@ public interface RefreshTokenServiceInterface {
 
     public RefreshResult rotateToken(String rawToken);
 
-    public record RefreshResult(String userEmail, String newRefreshToken) {
+    public record RefreshResult(Long userId, String newRefreshToken) {
     }
 }
