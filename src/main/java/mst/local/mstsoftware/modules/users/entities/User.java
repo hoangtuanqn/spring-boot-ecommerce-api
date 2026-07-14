@@ -1,6 +1,6 @@
 package mst.local.mstsoftware.modules.users.entities;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,10 +32,10 @@ public class User implements UserDetails {
     private String address;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     public User(String name, String email, String password, Long userCataloguesId, String phone) {
         this.name = name;
@@ -47,12 +47,12 @@ public class User implements UserDetails {
 
     @PrePersist
     protected void onCreated() {
-        createdAt = LocalDateTime.now();
+        createdAt = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdated() {
-        updatedAt = LocalDateTime.now();
+        updatedAt = Instant.now();
     }
 
     @Override

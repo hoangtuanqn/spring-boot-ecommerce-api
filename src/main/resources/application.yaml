@@ -25,3 +25,4 @@ jwt:
   secret: a1M8O206XTw5ITl6NzReN3BKTTNVaWY1L1dnfWFPQjIjaysvV2F3Tm5fZA==
   expiration: 86400000
   issuer: https://mstsoftware.vn/
+  refresh-token-ttl-days: 14

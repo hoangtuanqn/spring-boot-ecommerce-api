@@ -2,6 +2,7 @@ package mst.local.mstsoftware.services;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -26,6 +27,7 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtConfig.getSecretKey()));
     }
 
+    // tạo ra jwt
     public String generateToken(Long userId, String email) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + expirationTime);
@@ -46,9 +48,14 @@ public class JwtService {
         return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
+    // check token còn hsd k
     public boolean isTokenExpired(String token) {
         Date expiration = extractClaim(token, Claims::getExpiration);
         return expiration.before(new Date());
+    }
+
+    public String generateRefreshTokenRaw() {
+        return UUID.randomUUID().toString();
     }
 
     public String extractEmail(String token) {
@@ -60,11 +67,6 @@ public class JwtService {
         return claims.get("userId", Long.class);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) this.key)
@@ -73,4 +75,10 @@ public class JwtService {
                 .getPayload();
 
     }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
 }

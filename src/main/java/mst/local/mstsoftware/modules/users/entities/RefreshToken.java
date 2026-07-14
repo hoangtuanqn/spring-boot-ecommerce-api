@@ -11,6 +11,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,8 +21,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "blacklisted_tokens")
-public class BlacklistedToken {
+@Builder
+@Table(name = "refresh_tokens")
+public class RefreshToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +37,13 @@ public class BlacklistedToken {
 
     @Column(name = "expiry_date", nullable = false)
     private Instant expiryDate;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean revoked = false;
+
+    @Column(name = "replaced_by_token_id")
+    private String replacedByTokenId;
 
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

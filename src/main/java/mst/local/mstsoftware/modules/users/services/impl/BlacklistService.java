@@ -24,6 +24,7 @@ public class BlacklistService implements BlacklistServiceInterface {
     private JwtService jwtService;
     private TokenHashUtil tokenHashUtil;
 
+    @Override
     @Transactional
     public void blacklistToken(String token) {
         if (isTokenBlackList(token)) {
@@ -38,16 +39,18 @@ public class BlacklistService implements BlacklistServiceInterface {
         entity.setUserId(userId);
         entity.setTokenHash(tokenHash);
         entity.setExpiryDate(
-                expiration.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                expiration.toInstant().atZone(ZoneId.systemDefault()).toInstant());
 
         repository.save(entity);
     }
 
+    @Override
     public boolean isTokenBlackList(String token) {
         String tokenHash = tokenHashUtil.hash(token);
         return repository.existsByTokenHash(tokenHash);
     }
 
+    @Override
     @Transactional
     public void blacklistAllUserTokens(Long userId, List<String> activeTokens) {
         activeTokens.forEach(this::blacklistToken);
