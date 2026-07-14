@@ -25,7 +25,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
     private TokenHashUtil utils;
 
     @Override
-    public String issueRefreshToken(Long userId) {
+    public IssuedToken issueRefreshToken(Long userId) {
         String token = jwtService.generateRefreshTokenRaw();
         String tokenHash = utils.hash(token);
         RefreshToken entity = RefreshToken.builder()
@@ -36,27 +36,26 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
                 .build();
         repository.save(entity);
 
-        return token;
+        return new IssuedToken(token, entity.getId());
     }
 
     @Override
     public RefreshResult rotateToken(String rawToken) {
-        String hash = utils.hash(rawToken);
-        RefreshToken existing = repository.findByTokenHash(hash).orElseThrow(() -> new BadCredentialsException("Refresh token không hợp lệ!"));
+        RefreshToken existing = repository.findByTokenHash(utils.hash(rawToken)).orElseThrow(() -> new BadCredentialsException("Refresh token không hợp lệ!"));
         if(existing.isRevoked()) {
             // revoked hết tất cả những refresh token của người dùng
             repository.revokeAllRefreshTokenByUser(existing.getUserId());
             log.error("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
-            throw new BadCredentialsException("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
+            throw new SecurityException("Phát hiện token bị đánh cắp, đã tiến hành revoke tất cả token của người dùng.");
         }
         if (existing.getExpiryDate().isBefore(Instant.now())) {
             throw new BadCredentialsException("Refresh token đã hết hạn.");
         }
         existing.setRevoked(true);
-        String newRaw = this.issueRefreshToken(existing.getUserId());
-        existing.setReplacedByTokenId(newRaw);
+        IssuedToken newToken = this.issueRefreshToken(existing.getUserId());
+        existing.setReplacedByTokenId(newToken.tokenId());
         repository.save(existing);
-        return new RefreshResult(existing.getUserId(), newRaw);
+        return new RefreshResult(existing.getUserId(), newToken.rawToken());
     }
 
 }

@@ -1,5 +1,6 @@
 package mst.local.mstsoftware.modules.users.services.impl;
 
+import mst.local.mstsoftware.modules.users.services.interfaces.RefreshTokenServiceInterface;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import mst.local.mstsoftware.modules.users.resources.UserResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.services.BaseService;
 import mst.local.mstsoftware.services.JwtService;
+import mst.local.mstsoftware.modules.users.services.interfaces.RefreshTokenServiceInterface.IssuedToken;
 
 @Service
 @AllArgsConstructor
@@ -34,9 +36,9 @@ public class UserService extends BaseService implements UserServiceInterface {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
         String accessToken = jwtService.generateToken(user.getId(), email);
-        String refreshToken = refreshTokenService.issueRefreshToken(user.getId());
+        IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
         UserResource userResource = new UserResource(user.getId(), email, user.getName(), user.getPhone());
-        return new AuthResult(accessToken, refreshToken, userResource);
+        return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
 
 }
