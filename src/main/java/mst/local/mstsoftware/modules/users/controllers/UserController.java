@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.modules.users.entities.User;
-import mst.local.mstsoftware.modules.users.resources.LoginResource;
+import mst.local.mstsoftware.modules.users.resources.RefreshTokenResource;
 import mst.local.mstsoftware.modules.users.resources.UserResource;
 import mst.local.mstsoftware.modules.users.services.impl.RefreshTokenService;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserServiceInterface;
@@ -54,12 +54,12 @@ public class UserController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/")
+                .path("/api/v1/refresh")
                 .maxAge(Duration.ofDays(authConfig.getRefreshTokenTTLDays()))
                 .build();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new LoginResource(newAccessToken, null));
+                .body(new RefreshTokenResource(newAccessToken));
     }
 }
