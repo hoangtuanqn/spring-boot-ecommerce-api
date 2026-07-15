@@ -1,11 +1,5 @@
 package mst.local.mstsoftware.modules.users.services.impl;
 
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -14,14 +8,19 @@ import mst.local.mstsoftware.helpers.TokenHashUtil;
 import mst.local.mstsoftware.modules.users.entities.BlacklistedToken;
 import mst.local.mstsoftware.modules.users.repositories.BlacklistedTokenRepository;
 import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
-import mst.local.mstsoftware.services.JwtService;
+import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
+import org.springframework.stereotype.Service;
+
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class BlacklistService implements BlacklistServiceInterface {
     private BlacklistedTokenRepository repository;
-    private JwtService jwtService;
+    private JwtServiceInterface jwtService;
     private TokenHashUtil tokenHashUtil;
 
     @Override

@@ -2,9 +2,13 @@ package mst.local.mstsoftware.modules.users.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import mst.local.mstsoftware.modules.users.entities.User;
+import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;
+import mst.local.mstsoftware.modules.users.resources.UserResource;
 import mst.local.mstsoftware.modules.users.services.impl.RefreshTokenService;
-import mst.local.mstsoftware.services.JwtService;
+import mst.local.mstsoftware.resources.SuccessResource;
+import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import mst.local.mstsoftware.modules.users.entities.User;
-import mst.local.mstsoftware.modules.users.repositories.UserRepository;
-import mst.local.mstsoftware.modules.users.resources.UserResource;
-import mst.local.mstsoftware.resources.SuccessResource;
-
 import java.time.Duration;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -26,7 +24,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+    private final JwtServiceInterface jwtService;
     private final RefreshTokenService refreshTokenService;
 
     public String getMethodName(@RequestParam String param) {
@@ -50,7 +48,7 @@ public class UserController {
 
     @PostMapping("refresh")
     public ResponseEntity<?> refresh(@CookieValue("refresh_token") String rawRefreshToken) {
-       var result = refreshTokenService.rotateToken(rawRefreshToken);
+        var result = refreshTokenService.rotateToken(rawRefreshToken);
         User user = userRepository.findById(result.userId())
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
         String newAccessToken = jwtService.generateToken(result.userId(), user.getEmail());

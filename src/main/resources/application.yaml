@@ -4,6 +4,11 @@ spring:
   output:
     ansi:
       enabled: always
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
   logging:
     level:
       org.flywaydb: DEBUG
@@ -23,6 +28,6 @@ spring:
 
 jwt:
   secret: a1M8O206XTw5ITl6NzReN3BKTTNVaWY1L1dnfWFPQjIjaysvV2F3Tm5fZA==
-  expiration: 86400000
+  expiration: 900000
   issuer: https://mstsoftware.vn/
   refresh-token-ttl-days: 14

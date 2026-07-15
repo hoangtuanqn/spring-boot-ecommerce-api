@@ -8,25 +8,32 @@ import mst.local.mstsoftware.helpers.TokenHashUtil;
 import mst.local.mstsoftware.modules.users.entities.RefreshToken;
 import mst.local.mstsoftware.modules.users.repositories.RefreshTokenRepository;
 import mst.local.mstsoftware.modules.users.services.interfaces.RefreshTokenServiceInterface;
-import mst.local.mstsoftware.services.JwtService;
+import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class RefreshTokenService implements RefreshTokenServiceInterface {
-    private JwtService jwtService;
+    private JwtServiceInterface jwtService;
+    private RefreshTokenServiceInterface refreshTokenService;
     private RefreshTokenRepository repository;
     private JwtConfig JwtConfig;
     private TokenHashUtil utils;
 
     @Override
+    public String generateRefreshTokenRaw() {
+        return UUID.randomUUID().toString();
+    }
+
+    @Override
     public IssuedToken issueRefreshToken(Long userId) {
-        String token = jwtService.generateRefreshTokenRaw();
+        String token = refreshTokenService.generateRefreshTokenRaw();
         String tokenHash = utils.hash(token);
         RefreshToken entity = RefreshToken.builder()
                 .tokenHash(tokenHash) // token đã hash
