@@ -1,6 +1,8 @@
 package mst.local.mstsoftware.modules.users.services.interfaces;
 
 public interface RefreshTokenServiceInterface {
+    public String generateRefreshTokenRaw();
+
     public IssuedToken issueRefreshToken(Long userId);
 
     public RefreshResult rotateToken(String rawToken);

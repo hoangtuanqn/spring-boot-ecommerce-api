@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.helpers.JwtAuthFilter;
 import mst.local.mstsoftware.modules.users.requests.LoginRequest;
 import mst.local.mstsoftware.modules.users.resources.AuthResult;
@@ -27,6 +28,7 @@ public class AuthController {
     private final BlacklistServiceInterface blacklistService;
     private final UserServiceInterface userService;
     private final RefreshTokenServiceInterface refreshTokenService;
+    private final AuthConfig authConfig;
 
 
     @PostMapping("login")
@@ -37,7 +39,7 @@ public class AuthController {
                 .secure(true)
                 .sameSite("Strict")
                 .path("/")
-                .maxAge(Duration.ofDays(14))
+                .maxAge(Duration.ofDays(authConfig.getRefreshTokenTTLDays()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
