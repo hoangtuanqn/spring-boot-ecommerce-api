@@ -21,7 +21,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RefreshTokenService implements RefreshTokenServiceInterface {
     private JwtServiceInterface jwtService;
-    private RefreshTokenServiceInterface refreshTokenService;
     private RefreshTokenRepository repository;
     private AuthConfig AuthConfig;
     private TokenHashUtil utils;
@@ -33,7 +32,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
 
     @Override
     public IssuedToken issueRefreshToken(Long userId) {
-        String token = refreshTokenService.generateRefreshTokenRaw();
+        String token = this.generateRefreshTokenRaw();
         String tokenHash = utils.hash(token);
         RefreshToken entity = RefreshToken.builder()
                 .tokenHash(tokenHash) // token đã hash
