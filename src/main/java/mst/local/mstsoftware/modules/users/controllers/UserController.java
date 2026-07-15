@@ -29,10 +29,6 @@ public class UserController {
     private final RefreshTokenService refreshTokenService;
     private final AuthConfig authConfig;
 
-    public String getMethodName(@RequestParam String param) {
-        return new String();
-    }
-
     @GetMapping("me")
     public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
