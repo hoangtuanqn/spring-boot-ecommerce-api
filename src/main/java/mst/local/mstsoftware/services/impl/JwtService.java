@@ -3,7 +3,7 @@ package mst.local.mstsoftware.services.impl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import mst.local.mstsoftware.config.JwtConfig;
+import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,10 +19,10 @@ public class JwtService implements JwtServiceInterface {
     private final String issuer;
     private final SecretKey key;
 
-    public JwtService(JwtConfig jwtConfig) {
-        expirationTime = jwtConfig.getExpirationTime();
-        issuer = jwtConfig.getIssuer();
-        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(jwtConfig.getSecretKey()));
+    public JwtService(AuthConfig authConfig) {
+        expirationTime = authConfig.getExpirationTime();
+        issuer = authConfig.getIssuer();
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(authConfig.getSecretKey()));
     }
 
     // tạo ra jwt

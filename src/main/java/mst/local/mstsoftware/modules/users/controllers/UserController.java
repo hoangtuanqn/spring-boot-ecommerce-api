@@ -2,6 +2,7 @@ package mst.local.mstsoftware.modules.users.controllers;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;
@@ -26,6 +27,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final JwtServiceInterface jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final AuthConfig authConfig;
 
     public String getMethodName(@RequestParam String param) {
         return new String();
@@ -57,7 +59,7 @@ public class UserController {
                 .secure(true)
                 .sameSite("Strict")
                 .path("/")
-                .maxAge(Duration.ofDays(14))
+                .maxAge(Duration.ofDays(authConfig.getRefreshTokenTTLDays()))
                 .build();
 
         return ResponseEntity.ok()

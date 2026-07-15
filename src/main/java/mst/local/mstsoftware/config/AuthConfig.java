@@ -1,13 +1,12 @@
 package mst.local.mstsoftware.config;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.Getter;
-
 @Configuration
 @Getter
-public class JwtConfig {
+public class AuthConfig {
     @Value("${jwt.secret}")
     private String secretKey;
 

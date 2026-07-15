@@ -3,7 +3,7 @@ package mst.local.mstsoftware.modules.users.services.impl;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.config.JwtConfig;
+import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.helpers.TokenHashUtil;
 import mst.local.mstsoftware.modules.users.entities.RefreshToken;
 import mst.local.mstsoftware.modules.users.repositories.RefreshTokenRepository;
@@ -23,7 +23,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
     private JwtServiceInterface jwtService;
     private RefreshTokenServiceInterface refreshTokenService;
     private RefreshTokenRepository repository;
-    private JwtConfig JwtConfig;
+    private AuthConfig AuthConfig;
     private TokenHashUtil utils;
 
     @Override
@@ -38,7 +38,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
         RefreshToken entity = RefreshToken.builder()
                 .tokenHash(tokenHash) // token đã hash
                 .userId(userId)
-                .expiryDate(Instant.now().plus(JwtConfig.getRefreshTokenTTLDays(), ChronoUnit.DAYS))
+                .expiryDate(Instant.now().plus(AuthConfig.getRefreshTokenTTLDays(), ChronoUnit.DAYS))
                 .revoked(false)
                 .build();
         repository.save(entity);
