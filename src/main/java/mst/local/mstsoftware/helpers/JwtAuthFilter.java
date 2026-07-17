@@ -59,8 +59,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 3. Extract Token
         String token = authHeader.substring(7);
-        if (blacklistService.isTokenBlackList(token)) {
-            writeErrorResponse(response, "Token của bạn đã bị thu hồi.");
+        String jti = jwtService.extractJti(token);
+        if (blacklistService.isRevoked(jti)) {
+            writeErrorResponse(response, "Token của bạn không hợp lệ.");
             return;
         }
         request.setAttribute(TOKEN_ATTRIBUTE, token);
