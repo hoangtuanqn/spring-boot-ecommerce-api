@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -34,6 +36,7 @@ public class JwtService implements JwtServiceInterface {
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
+                .claim("jti", String.valueOf(UUID.randomUUID()))
                 .issuer(issuer)
                 .issuedAt(now)
                 .expiration(expiredAt)
@@ -64,6 +67,18 @@ public class JwtService implements JwtServiceInterface {
     public Long extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("userId", Long.class);
+    }
+
+    @Override
+    public String extractJti(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("jti", String.class);
+    }
+
+    @Override
+    public Map<String, Object> extractRevoke(String token) {
+        Claims claims = extractAllClaims(token);
+        return Map.of("jti", claims.get("jti", String.class), "expiresAt", claims.getExpiration().toInstant());
     }
 
     @Override
