@@ -1,16 +1,14 @@
 package mst.local.mstsoftware.modules.users.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import mst.local.mstsoftware.modules.users.repositories.UserRepository;
-
 @Service
 @RequiredArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
     private final UserRepository userRepository;
 
     @Override

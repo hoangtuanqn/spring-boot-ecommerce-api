@@ -38,7 +38,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/")
+                .path("/api/v1/refresh")
                 .maxAge(Duration.ofDays(authConfig.getRefreshTokenTTLDays()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
@@ -61,7 +61,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/")
+                .path("/api/v1/refresh")
                 .maxAge(0)
                 .build();
         return ResponseEntity.noContent()

@@ -14,6 +14,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class UserService extends BaseService implements UserServiceInterface {
@@ -36,6 +38,16 @@ public class UserService extends BaseService implements UserServiceInterface {
         IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
         UserResource userResource = new UserResource(user.getId(), email, user.getName(), user.getPhone());
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
 }
