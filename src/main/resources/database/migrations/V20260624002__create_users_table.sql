@@ -1,6 +1,6 @@
 CREATE TABLE users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    user_catalogues_id BIGINT UNSIGNED NOT NULL,
+    user_catalogues_id BIGINT UNSIGNED NULL,
     name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,

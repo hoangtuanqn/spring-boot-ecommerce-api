@@ -1,14 +1,13 @@
 package mst.local.mstsoftware.databases.seeder;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.repositories.UserRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -33,7 +32,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             user.setName("Phạm Hoàng Tuấn");
             user.setEmail("phamhoangtuanqn@gmail.com");
             user.setPassword(password);
-            user.setUserCataloguesId(1L);
+//            user.setUserCataloguesId(1L);
             user.setPhone("0812665001");
             userRepository.save(user);
 

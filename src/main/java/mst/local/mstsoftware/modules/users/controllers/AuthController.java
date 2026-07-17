@@ -12,6 +12,7 @@ import mst.local.mstsoftware.modules.users.resources.LoginResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
 import mst.local.mstsoftware.modules.users.services.interfaces.RefreshTokenServiceInterface;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserServiceInterface;
+import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -27,6 +30,7 @@ public class AuthController {
 
     private final BlacklistServiceInterface blacklistService;
     private final UserServiceInterface userService;
+    private final JwtServiceInterface jwtService;
     private final RefreshTokenServiceInterface refreshTokenService;
     private final AuthConfig authConfig;
 
@@ -38,7 +42,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/api/v1/refresh")
+                .path("/")
                 .maxAge(Duration.ofDays(authConfig.getRefreshTokenTTLDays()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
@@ -53,15 +57,16 @@ public class AuthController {
         if (token == null || refreshTokenRaw == null) {
             throw new AuthenticationCredentialsNotFoundException("Không tìm thấy access token hoặc refresh token để đăng xuất");
         }
+        Map<String, Object> items = jwtService.extractRevoke(token);
         // revoked access token
-        blacklistService.blacklistToken(token);
+        blacklistService.revoke((String) items.get("jti"), (Instant) items.get("expiresAt"));
         // revoked refresh token
         refreshTokenService.revokeToken(refreshTokenRaw);
         ResponseCookie clearCookie = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("Strict")
-                .path("/api/v1/refresh")
+                .path("/")
                 .maxAge(0)
                 .build();
         return ResponseEntity.noContent()

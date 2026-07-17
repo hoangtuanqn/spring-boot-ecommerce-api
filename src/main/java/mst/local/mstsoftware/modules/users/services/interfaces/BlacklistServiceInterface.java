@@ -1,11 +1,11 @@
 package mst.local.mstsoftware.modules.users.services.interfaces;
 
-import java.util.List;
+import java.time.Instant;
 
 public interface BlacklistServiceInterface {
-    public void blacklistToken(String token);
+    static final String PREFIX = "blacklist:jti:";
 
-    public boolean isTokenBlackList(String token);
+    public void revoke(String jti, Instant expiresAt);
 
-    public void blacklistAllUserTokens(Long userId, List<String> activeTokens);
+    public Boolean isRevoked(String jti);
 }
