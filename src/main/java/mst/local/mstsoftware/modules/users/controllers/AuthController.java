@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.config.AuthConfig;
-import mst.local.mstsoftware.helpers.JwtAuthFilter;
+import mst.local.mstsoftware.filters.JwtAuthFilter;
 import mst.local.mstsoftware.modules.users.requests.LoginRequest;
 import mst.local.mstsoftware.modules.users.resources.AuthResult;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;

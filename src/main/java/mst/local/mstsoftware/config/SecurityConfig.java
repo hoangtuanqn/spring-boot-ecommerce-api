@@ -10,7 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.AllArgsConstructor;
-import mst.local.mstsoftware.helpers.JwtAuthFilter;
+import mst.local.mstsoftware.filters.JwtAuthFilter;
 
 @AllArgsConstructor
 @Configuration

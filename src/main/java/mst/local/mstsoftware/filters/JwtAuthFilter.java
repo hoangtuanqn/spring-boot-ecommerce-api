@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.helpers;
+package mst.local.mstsoftware.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
