@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
+import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
 import mst.local.mstsoftware.resources.ErrorResource;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.http.MediaType;

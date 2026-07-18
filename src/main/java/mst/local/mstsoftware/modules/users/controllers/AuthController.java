@@ -9,7 +9,7 @@ import mst.local.mstsoftware.helpers.JwtAuthFilter;
 import mst.local.mstsoftware.modules.users.requests.LoginRequest;
 import mst.local.mstsoftware.modules.users.resources.AuthResult;
 import mst.local.mstsoftware.modules.users.resources.LoginResource;
-import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
+import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
 import mst.local.mstsoftware.modules.users.services.interfaces.RefreshTokenServiceInterface;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
