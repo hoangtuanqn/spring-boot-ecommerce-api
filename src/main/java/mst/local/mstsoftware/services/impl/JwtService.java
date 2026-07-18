@@ -36,7 +36,7 @@ public class JwtService implements JwtServiceInterface {
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
-                .claim("jti", String.valueOf(UUID.randomUUID()))
+                .claim("jti", UUID.randomUUID().toString())
                 .issuer(issuer)
                 .issuedAt(now)
                 .expiration(expiredAt)

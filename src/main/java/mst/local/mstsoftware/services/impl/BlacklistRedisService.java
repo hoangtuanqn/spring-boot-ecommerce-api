@@ -1,8 +1,8 @@
-package mst.local.mstsoftware.modules.users.services.impl;
+package mst.local.mstsoftware.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
+import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 

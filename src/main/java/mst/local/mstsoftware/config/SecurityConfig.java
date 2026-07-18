@@ -10,13 +10,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.AllArgsConstructor;
-import mst.local.mstsoftware.helpers.JwtAuthFilter;
+import mst.local.mstsoftware.filters.JwtAuthFilter;
+import mst.local.mstsoftware.filters.TraceIdFilter;
 
 @AllArgsConstructor
 @Configuration
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final TraceIdFilter traceIdFilter;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -40,7 +42,8 @@ public class SecurityConfig {
                 // sau khi chạy qua jwtAuthFiler thì nó sẽ chạy qua bên
                 // UsernamePasswordAuthenticationFilter.class (chạy nma ko làm gì)
                 // cần phải có 2 tham số
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(traceIdFilter, JwtAuthFilter.class);
 
         return http.build();
     }

@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.helpers;
+package mst.local.mstsoftware.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,8 +12,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.modules.users.services.interfaces.BlacklistServiceInterface;
+import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.resources.ErrorResource;
+import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +31,6 @@ import java.util.Map;
 @Component
 @Slf4j // cài sẵn logger
 @RequiredArgsConstructor
-
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtServiceInterface jwtService;
     private final BlacklistServiceInterface blacklistService;
@@ -59,13 +59,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 3. Extract Token
         String token = authHeader.substring(7);
-        String jti = jwtService.extractJti(token);
-        if (blacklistService.isRevoked(jti)) {
-            writeErrorResponse(response, "Token của bạn không hợp lệ.");
-            return;
-        }
-        request.setAttribute(TOKEN_ATTRIBUTE, token);
         try {
+            String jti = jwtService.extractJti(token);
+            if (blacklistService.isRevoked(jti)) {
+                writeErrorResponse(response, "Token của bạn không hợp lệ.");
+                return;
+            }
+            request.setAttribute(TOKEN_ATTRIBUTE, token);
             String email = jwtService.extractEmail(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
@@ -83,6 +83,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } catch (JwtException e) {
             String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token");
             writeErrorResponse(response, message);
+            return;
 
         } catch (Exception e) {
             writeErrorResponse(response, "Lỗi xác thực token");
@@ -93,10 +94,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
-        ErrorResource error = new ErrorResource(message, null);
+        ErrorResource error = ErrorResource.builder()
+                .code("UNAUTHORIZED")
+                .build();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(error));
+        response.getWriter().write(objectMapper.writeValueAsString(ApiResource.error(error, message)));
     }
 }

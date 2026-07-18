@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.modules.users.services.interfaces;
+package mst.local.mstsoftware.services.interfaces;
 
 import java.time.Instant;
 

@@ -1,15 +1,14 @@
 package mst.local.mstsoftware.resources;
 
-import java.util.Map;
-
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-@AllArgsConstructor
+import java.util.List;
+
 @Getter
-@Setter
+@Builder
 public class ErrorResource {
-    private String message;
-    private Map<String, String> errors;
+    private String code;
+    @Builder.Default
+    private List<FieldErrorResource> details = List.of();
 }
