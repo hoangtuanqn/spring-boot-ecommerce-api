@@ -1,6 +1,9 @@
 server:
   port: 8000
-  
+
+app:
+  schedule:
+    refresh-token-cleanup: "0 0 2 * * *"
 spring:
   application:
     name: mstsoftware
