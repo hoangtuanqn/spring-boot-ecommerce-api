@@ -4,7 +4,6 @@ package mst.local.mstsoftware.modules.users.controllers;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.resources.UserCatalogueResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserCatalogueServiceInterface;
@@ -24,13 +23,9 @@ public class UserCatalogueController {
 //    private final UserCa
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody CreateUserCatalogueRequest request) {
-        UserCatalogue userCatalogue = userCatalogueService.create(request);
-        UserCatalogueResource userCatalogueResource = UserCatalogueResource.builder()
-                .name(userCatalogue.getName())
-                .publish(userCatalogue.getPublish())
-                .build();
+    public ResponseEntity<ApiResource<UserCatalogueResource>> create(@Valid @RequestBody CreateUserCatalogueRequest request) {
+
         return
-                ResponseEntity.ok(ApiResource.success(userCatalogueResource, "Thêm user catalogue thành công!"));
+                ResponseEntity.ok(ApiResource.success(userCatalogueService.create(request), "Thêm user catalogue thành công!"));
     }
 }

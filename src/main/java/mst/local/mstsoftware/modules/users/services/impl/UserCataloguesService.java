@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
+import mst.local.mstsoftware.modules.users.resources.UserCatalogueResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserCatalogueServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,12 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     @Transactional
-    public UserCatalogue create(CreateUserCatalogueRequest userCatalogueRequest) {
+    public UserCatalogueResource create(CreateUserCatalogueRequest userCatalogueRequest) {
         UserCatalogue userCatalogue = UserCatalogue.builder()
                 .name(userCatalogueRequest.getName())
                 .publish(userCatalogueRequest.getPublish())
                 .build();
-        return userCatalogueRepository.save(userCatalogue);
+        UserCatalogue created = userCatalogueRepository.save(userCatalogue);
+        return UserCatalogueResource.fromEntity(created);
     }
 }
