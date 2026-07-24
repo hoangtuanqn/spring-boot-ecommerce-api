@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,20 +24,38 @@ import java.util.Map;
 public class UserCatalogueController {
     private final UserCatalogueServiceInterface userCatalogueService;
 
+    @GetMapping("/all")
+    public ResponseEntity<ApiResource<List<UserCatalogueResource>>> list() {
+        return ResponseEntity.ok(
+                ApiResource.success(userCatalogueService.list(), "Lấy danh sách user catalogues thành công!"));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResource<UserCatalogueResource>> show(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                ApiResource.success(userCatalogueService.findById(id), "Lấy chi tiết user catalogues thành công!"));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResource<UserCatalogueResource>> destroy(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                ApiResource.success(userCatalogueService.destroy(id), "Xóa user catalogues thành công!"));
+    }
+
     @GetMapping
-    public ResponseEntity<ApiResource<Page<UserCatalogueResource>>> index(HttpServletRequest request) {
+    public ResponseEntity<ApiResource<Page<UserCatalogueResource>>> paginate(HttpServletRequest request) {
         Map<String, String[]> parameters = request.getParameterMap();
         Page<UserCatalogueResource> page = userCatalogueService.paginate(parameters);
         return ResponseEntity.ok(ApiResource.success(page, "Hiển thị danh sách user catalogues thành công!"));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResource<UserCatalogueResource>> create(@Valid @RequestBody CreateUserCatalogueRequest request) {
+    public ResponseEntity<ApiResource<UserCatalogueResource>> store(@Valid @RequestBody CreateUserCatalogueRequest request) {
         return
-                ResponseEntity.ok(ApiResource.success(userCatalogueService.create(request), "Thêm user catalogue thành công!"));
+                ResponseEntity.ok(ApiResource.success(userCatalogueService.store(request), "Thêm user catalogue thành công!"));
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResource<UserCatalogueResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateUserCatalogueRequest request) {
         return
                 ResponseEntity.ok(ApiResource.success(userCatalogueService.update(id, request), "Cập nhật user catalogue thành công!"));
