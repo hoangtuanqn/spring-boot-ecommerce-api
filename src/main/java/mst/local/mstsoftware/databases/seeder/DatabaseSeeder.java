@@ -29,7 +29,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         if (isUserTableEmpty() || isUserCatalogueTableEmpty()) {
             UserCatalogue userCatalogue = UserCatalogue.builder()
                     .name("Admin")
-                    .publish(true)
+                    .publish(1)
                     .build();
             userCatalogue = userCatalogueRepository.save(userCatalogue);
 

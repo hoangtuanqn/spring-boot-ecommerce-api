@@ -19,8 +19,8 @@ public class UserCatalogue {
     private Long id;
     private String name;
 
-    @Column(nullable = false, columnDefinition = "TINYINT")
-    private Boolean publish;
+    @Column(name = "publish", columnDefinition = "TINYINT(1)")
+    private Integer publish;
 
     @Column(name = "created_at")
     private Instant createdAt;
