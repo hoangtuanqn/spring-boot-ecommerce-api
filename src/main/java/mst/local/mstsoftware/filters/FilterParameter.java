@@ -16,9 +16,10 @@ public class FilterParameter {
 
     // phân loại theo các filter mà đơn giản
     public static Map<String, String> filterSimple(Map<String, String[]> parameters) {
-        String[] arr = {"[", "keyword", "page", "perPage", "sort"};
+        String[] arr = {"keyword", "page", "perPage", "sort", "start_date", "end_date"};
         return parameters.entrySet().stream()
                 .filter(entry -> !Arrays.asList(arr).contains(entry.getKey()))
+                .filter(entry -> !entry.getKey().contains("["))
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue()[0]));
 
     }
