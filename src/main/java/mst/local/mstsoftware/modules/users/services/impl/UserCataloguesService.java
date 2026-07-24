@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.filters.FilterParameter;
+import mst.local.mstsoftware.helpers.Helpers;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
@@ -54,8 +55,8 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     public Page<UserCatalogueResource> paginate(Map<String, String[]> parameters) {
-        int page = parameters.containsKey("page") ? Integer.parseInt(parameters.get("page")[0]) : 1;
-        int perPage = parameters.containsKey("perPage") ? Integer.parseInt(parameters.get("perPage")[0]) : 20;
+        int page = Math.max(1, Helpers.parseIntSafe(parameters.get("page"), 1));
+        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 1), 1, 100);
         Sort sort = createSort(parameters.get("sort") != null ? parameters.get("sort")[0] : "id");
         String keyword = FilterParameter.filterKeyword(parameters);
         Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
