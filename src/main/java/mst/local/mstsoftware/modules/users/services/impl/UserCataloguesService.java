@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -31,7 +32,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     @Transactional
-    public UserCatalogueResource create(CreateUserCatalogueRequest userCatalogueRequest) {
+    public UserCatalogueResource store(CreateUserCatalogueRequest userCatalogueRequest) {
         UserCatalogue userCatalogue = UserCatalogue.builder()
                 .name(userCatalogueRequest.getName())
                 .publish(userCatalogueRequest.getPublish())
@@ -51,6 +52,21 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
         UserCatalogue updated = userCatalogueRepository.save(userCata);
 
         return UserCatalogueResource.fromEntity(updated);
+    }
+
+    public UserCatalogueResource findById(Long id) {
+        UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
+        return UserCatalogueResource.fromEntity(userCatalogue);
+    }
+
+    public List<UserCatalogueResource> list() {
+        return userCatalogueRepository.findAll().stream().map(UserCatalogueResource::fromEntity).toList();
+    }
+
+    public UserCatalogueResource destroy(Long id) {
+        UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
+        userCatalogueRepository.delete(userCatalogue);
+        return UserCatalogueResource.fromEntity(userCatalogue);
     }
 
     @Override
