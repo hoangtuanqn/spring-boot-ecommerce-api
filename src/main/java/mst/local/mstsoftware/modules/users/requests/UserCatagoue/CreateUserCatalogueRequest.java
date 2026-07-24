@@ -10,6 +10,6 @@ public class CreateUserCatalogueRequest {
     private String name;
 
     @NotNull(message = "Trạng thái không được để trống!")
-    private Boolean publish;
+    private Integer publish;
 
 }

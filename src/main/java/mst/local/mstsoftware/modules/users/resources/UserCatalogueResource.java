@@ -6,7 +6,7 @@ import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record UserCatalogueResource(Long id, String name, Boolean publish) {
+public record UserCatalogueResource(Long id, String name, Integer publish) {
     public static UserCatalogueResource fromEntity(UserCatalogue entity) {
         return UserCatalogueResource.builder()
                 .id(entity.getId())
