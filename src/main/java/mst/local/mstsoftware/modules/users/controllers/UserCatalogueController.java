@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.UpdateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.resources.UserCatalogueResource;
@@ -40,6 +41,13 @@ public class UserCatalogueController {
     public ResponseEntity<ApiResource<UserCatalogueResource>> destroy(@PathVariable Long id) {
         return ResponseEntity.ok(
                 ApiResource.success(userCatalogueService.destroy(id), "Xóa user catalogues thành công!"));
+    }
+
+    @DeleteMapping("/batch-delete")
+    public ResponseEntity<ApiResource<?>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
+        userCatalogueService.deleteMultiple(request.getIds());
+        return ResponseEntity.ok(
+                ApiResource.success(null, "Xóa tất cả user catalogues thành công!"));
     }
 
     @GetMapping

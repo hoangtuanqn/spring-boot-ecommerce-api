@@ -21,4 +21,6 @@ public interface UserCatalogueServiceInterface {
 
     public UserCatalogueResource destroy(Long id);
 
+    public void deleteMultiple(List<Long> ids);
+
 }
