@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,6 +66,18 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
         UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
         userCatalogueRepository.delete(userCatalogue);
         return userCatalogueMapper.toResource(userCatalogue);
+    }
+
+    @Override
+    @Transactional
+    public void deleteMultiple(List<Long> ids) {
+        var users = userCatalogueRepository.findAllById(ids);
+        if (users.size() != ids.size()) {
+            Set<Long> foundIds = users.stream().map(UserCatalogue::getId).collect(Collectors.toSet());
+            List<Long> notFoundIds = ids.stream().filter(id -> !foundIds.contains(id)).toList();
+            throw new EntityNotFoundException("Không tìm thấy  các id sau: " + notFoundIds);
+        }
+        userCatalogueRepository.deleteAll(users);
     }
 
     @Override
