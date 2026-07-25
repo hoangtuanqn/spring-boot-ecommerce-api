@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.filters.FilterParameter;
 import mst.local.mstsoftware.helpers.Helpers;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
+import mst.local.mstsoftware.modules.users.mappers.UserCatalogueMapper;
 import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.UpdateUserCatalogueRequest;
@@ -29,50 +30,46 @@ import java.util.Map;
 @AllArgsConstructor
 public class UserCataloguesService extends BaseService implements UserCatalogueServiceInterface {
     private final UserCatalogueRepository userCatalogueRepository;
+    private final UserCatalogueMapper userCatalogueMapper;
+
 
     @Override
     @Transactional
     public UserCatalogueResource store(CreateUserCatalogueRequest userCatalogueRequest) {
-        UserCatalogue userCatalogue = UserCatalogue.builder()
-                .name(userCatalogueRequest.getName())
-                .publish(userCatalogueRequest.getPublish())
-                .build();
+        UserCatalogue userCatalogue = userCatalogueMapper.toEntity(userCatalogueRequest);
         UserCatalogue created = userCatalogueRepository.save(userCatalogue);
-        return UserCatalogueResource.fromEntity(created);
+        return userCatalogueMapper.toResource(created);
     }
 
     @Override
     @Transactional
     public UserCatalogueResource update(Long id, UpdateUserCatalogueRequest userCatalogue) {
         UserCatalogue userCata = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy nguười dùng!"));
-
-        userCata.setName(userCatalogue.getName());
-        userCata.setPublish(userCatalogue.getPublish());
-
+        userCatalogueMapper.updateEntity(userCatalogue, userCata);
         UserCatalogue updated = userCatalogueRepository.save(userCata);
 
-        return UserCatalogueResource.fromEntity(updated);
+        return userCatalogueMapper.toResource(updated);
     }
 
     public UserCatalogueResource findById(Long id) {
         UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
-        return UserCatalogueResource.fromEntity(userCatalogue);
+        return userCatalogueMapper.toResource(userCatalogue);
     }
 
     public List<UserCatalogueResource> list() {
-        return userCatalogueRepository.findAll().stream().map(UserCatalogueResource::fromEntity).toList();
+        return userCatalogueMapper.toList(userCatalogueRepository.findAll());
     }
 
     public UserCatalogueResource destroy(Long id) {
         UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
         userCatalogueRepository.delete(userCatalogue);
-        return UserCatalogueResource.fromEntity(userCatalogue);
+        return userCatalogueMapper.toResource(userCatalogue);
     }
 
     @Override
     public Page<UserCatalogueResource> paginate(Map<String, String[]> parameters) {
         int page = Math.max(1, Helpers.parseIntSafe(parameters.get("page"), 1));
-        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 1), 1, 100);
+        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 20), 1, 100);
         Sort sort = createSort(parameters.get("sort") != null ? parameters.get("sort")[0] : "id");
         String keyword = FilterParameter.filterKeyword(parameters);
         Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
@@ -83,7 +80,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
                 ).and(BaseSpecification.<UserCatalogue>whereSpec(filterSimple))
                 .and(BaseSpecification.<UserCatalogue>whereComplex(filterComplex));
         Pageable pageable = PageRequest.of(page - 1, perPage, sort);
-        return userCatalogueRepository.findAll(specs, pageable).map(UserCatalogueResource::fromEntity);
+        return userCatalogueRepository.findAll(specs, pageable).map(userCatalogueMapper::toResource);
     }
 
 }
