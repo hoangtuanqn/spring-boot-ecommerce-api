@@ -72,7 +72,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     @Override
     public Page<UserCatalogueResource> paginate(Map<String, String[]> parameters) {
         int page = Math.max(1, Helpers.parseIntSafe(parameters.get("page"), 1));
-        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 1), 1, 100);
+        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 20), 1, 100);
         Sort sort = createSort(parameters.get("sort") != null ? parameters.get("sort")[0] : "id");
         String keyword = FilterParameter.filterKeyword(parameters);
         Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
