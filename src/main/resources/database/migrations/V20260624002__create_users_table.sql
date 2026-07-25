@@ -9,6 +9,5 @@ CREATE TABLE users (
     image VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user_catalogues_id FOREIGN KEY (user_catalogues_id) REFERENCES user_catalogues(id)
-    ON DELETE CASCADE
+    CONSTRAINT fk_user_catalogues_id FOREIGN KEY (user_catalogues_id) REFERENCES user_catalogues(id) ON DELETE CASCADE
 );

@@ -7,6 +7,6 @@ CREATE TABLE refresh_tokens(
     replaced_by_token_id BIGINT UNSIGNED NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (replaced_by_token_id) REFERENCES refresh_tokens(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (replaced_by_token_id) REFERENCES refresh_tokens(id) ON DELETE CASCADE
 )
