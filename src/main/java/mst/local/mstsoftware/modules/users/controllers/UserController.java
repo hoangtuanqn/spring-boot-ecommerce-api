@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.users.controllers;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.config.AuthConfig;
+import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.helpers.CookieUtils;
 import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.resources.RefreshTokenResource;
@@ -23,7 +24,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor
-public class UserController {
+public class UserController extends BaseController {
 
     private final UserServiceInterface userService;
     private final JwtServiceInterface jwtService;

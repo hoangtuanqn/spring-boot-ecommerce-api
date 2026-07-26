@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.UpdateUserCatalogueRequest;
@@ -22,50 +23,44 @@ import java.util.Map;
 @Slf4j
 @AllArgsConstructor
 @RequestMapping("/api/v1/user-catalogues")
-public class UserCatalogueController {
+public class UserCatalogueController extends BaseController {
     private final UserCatalogueServiceInterface userCatalogueService;
 
     @GetMapping("/all")
     public ResponseEntity<ApiResource<List<UserCatalogueResource>>> list() {
-        return ResponseEntity.ok(
-                ApiResource.success(userCatalogueService.list(), "Lấy danh sách user catalogues thành công!"));
+        return ok(userCatalogueService.list(), "Lấy danh sách user catalogues thành công!");
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResource<UserCatalogueResource>> show(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                ApiResource.success(userCatalogueService.findById(id), "Lấy chi tiết user catalogues thành công!"));
+        return ok(userCatalogueService.findById(id), "Lấy chi tiết user catalogues thành công!");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResource<UserCatalogueResource>> destroy(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                ApiResource.success(userCatalogueService.destroy(id), "Xóa user catalogues thành công!"));
+        return ok(userCatalogueService.destroy(id), "Xóa user catalogues thành công!");
     }
 
     @DeleteMapping("/batch-delete")
-    public ResponseEntity<ApiResource<?>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
+    public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
         userCatalogueService.deleteMultiple(request.getIds());
-        return ResponseEntity.ok(
-                ApiResource.success(null, "Xóa tất cả user catalogues thành công!"));
+        return ok(null, "Xóa tất cả user catalogues thành công!");
     }
 
     @GetMapping
     public ResponseEntity<ApiResource<Page<UserCatalogueResource>>> paginate(HttpServletRequest request) {
         Map<String, String[]> parameters = request.getParameterMap();
         Page<UserCatalogueResource> page = userCatalogueService.paginate(parameters);
-        return ResponseEntity.ok(ApiResource.success(page, "Hiển thị danh sách user catalogues thành công!"));
+        return ok(page, "Hiển thị danh sách user catalogues thành công!");
     }
 
     @PostMapping
     public ResponseEntity<ApiResource<UserCatalogueResource>> store(@Valid @RequestBody CreateUserCatalogueRequest request) {
-        return
-                ResponseEntity.ok(ApiResource.success(userCatalogueService.store(request), "Thêm user catalogue thành công!"));
+        return created(userCatalogueService.store(request), "Thêm user catalogue thành công!");
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResource<UserCatalogueResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateUserCatalogueRequest request) {
-        return
-                ResponseEntity.ok(ApiResource.success(userCatalogueService.update(id, request), "Cập nhật user catalogue thành công!"));
+        return ok(userCatalogueService.update(id, request), "Cập nhật user catalogue thành công!");
     }
 }
