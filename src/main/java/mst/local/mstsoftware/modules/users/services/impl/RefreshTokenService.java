@@ -22,7 +22,7 @@ import java.util.UUID;
 public class RefreshTokenService implements RefreshTokenServiceInterface {
     private JwtServiceInterface jwtService;
     private RefreshTokenRepository repository;
-    private AuthConfig AuthConfig;
+    private AuthConfig authConfig;
     private TokenHashUtil utils;
 
     @Override
@@ -37,7 +37,7 @@ public class RefreshTokenService implements RefreshTokenServiceInterface {
         RefreshToken entity = RefreshToken.builder()
                 .tokenHash(tokenHash) // token đã hash
                 .userId(userId)
-                .expiryDate(Instant.now().plus(AuthConfig.getRefreshTokenTTLDays(), ChronoUnit.DAYS))
+                .expiryDate(Instant.now().plus(authConfig.getRefreshTokenTTLDays(), ChronoUnit.DAYS))
                 .revoked(false)
                 .build();
         repository.save(entity);
