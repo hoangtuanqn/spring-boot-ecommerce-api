@@ -79,7 +79,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     public Page<UserCatalogueResource> paginate(Map<String, String[]> parameters) {
-        Specification<UserCatalogue> specs = specBuilder.buildSpecification(parameters);
+        Specification<UserCatalogue> specs = specBuilder.buildSpecification(parameters, "name");
         Pageable pageable = specBuilder.buildPageable(parameters);
         return userCatalogueRepository.findAll(specs, pageable).map(userCatalogueMapper::toResource);
     }
