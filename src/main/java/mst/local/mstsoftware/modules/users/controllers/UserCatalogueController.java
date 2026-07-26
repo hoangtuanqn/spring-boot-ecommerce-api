@@ -12,6 +12,7 @@ import mst.local.mstsoftware.modules.users.resources.UserCatalogueResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserCatalogueServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,7 +61,7 @@ public class UserCatalogueController {
     @PostMapping
     public ResponseEntity<ApiResource<UserCatalogueResource>> store(@Valid @RequestBody CreateUserCatalogueRequest request) {
         return
-                ResponseEntity.ok(ApiResource.success(userCatalogueService.store(request), "Thêm user catalogue thành công!"));
+                ResponseEntity.status(HttpStatus.CREATED).body(ApiResource.success(userCatalogueService.store(request), "Thêm user catalogue thành công!"));
     }
 
     @PutMapping("/{id}")
