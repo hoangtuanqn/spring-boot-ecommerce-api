@@ -1,6 +1,9 @@
 package mst.local.mstsoftware.specifications;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
@@ -69,23 +72,56 @@ public class BaseSpecification<T> {
     }
 
     private static <T> Predicate buildPredicate(
-            jakarta.persistence.criteria.Root<T> root,
-            jakarta.persistence.criteria.CriteriaBuilder cb,
+            Root<T> root,
+            CriteriaBuilder cb,
             String field,
             String operator,
             String value
     ) {
+        Path<?> path = root.get(field);
+        Class<?> type = path.getJavaType();
+        Object typedValue = castValue(type, value);
+
         return switch (operator) {
-            case "eq" -> cb.equal(root.get(field), value);
-            case "neq" -> cb.notEqual(root.get(field), value);
+            case "eq" -> cb.equal(path, typedValue);
+            case "neq" -> cb.notEqual(path, typedValue);
             case "like" -> cb.like(cb.lower(root.get(field)), "%" + value.toLowerCase() + "%");
-            case "gt" -> cb.greaterThan(root.get(field), value);
-            case "lt" -> cb.lessThan(root.get(field), value);
-            case "gte" -> cb.greaterThanOrEqualTo(root.get(field), value);
-            case "lte" -> cb.lessThanOrEqualTo(root.get(field), value);
-            case "in" -> root.get(field).in(Arrays.asList(value.split(",")));
+            case "gt", "lt", "gte", "lte" -> buildComparablePredicate(cb, path, operator, typedValue);
+            case "in" -> path.in(
+                    Arrays.stream(value.split(","))
+                            .map(String::trim)
+                            .map(v -> castValue(type, v))
+                            .toList()
+            );
             default -> null;
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <Y extends Comparable<? super Y>> Predicate buildComparablePredicate(
+            CriteriaBuilder cb,
+            Path<?> path,
+            String operator,
+            Object castedValue
+    ) {
+        Path<Y> typedPath = (Path<Y>) path;
+        Y typedValue = (Y) castedValue;
+        return switch (operator) {
+            case "gt" -> cb.greaterThan(typedPath, typedValue);
+            case "lt" -> cb.lessThan(typedPath, typedValue);
+            case "gte" -> cb.greaterThanOrEqualTo(typedPath, typedValue);
+            case "lte" -> cb.lessThanOrEqualTo(typedPath, typedValue);
+            default -> throw new IllegalStateException("unreachable");
+        };
+    }
+
+    private static Object castValue(Class<?> javaType, String raw) {
+        if (javaType.equals(Long.class) || javaType.equals(long.class)) return Long.valueOf(raw);
+        if (javaType.equals(Integer.class) || javaType.equals(int.class)) return Integer.valueOf(raw);
+        if (javaType.equals(Boolean.class) || javaType.equals(boolean.class)) return Boolean.valueOf(raw);
+        if (javaType.equals(java.time.LocalDate.class)) return java.time.LocalDate.parse(raw);
+        if (javaType.equals(java.time.LocalDateTime.class)) return java.time.LocalDateTime.parse(raw);
+        return raw;
     }
 
 }
