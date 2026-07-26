@@ -4,8 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.filters.FilterParameter;
-import mst.local.mstsoftware.helpers.Helpers;
+import mst.local.mstsoftware.helpers.QuerySpecBuilder;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.mappers.UserCatalogueMapper;
 import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
@@ -14,11 +13,8 @@ import mst.local.mstsoftware.modules.users.requests.UserCatagoue.UpdateUserCatal
 import mst.local.mstsoftware.modules.users.resources.UserCatalogueResource;
 import mst.local.mstsoftware.modules.users.services.interfaces.UserCatalogueServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
-import mst.local.mstsoftware.specifications.BaseSpecification;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +29,7 @@ import java.util.stream.Collectors;
 public class UserCataloguesService extends BaseService implements UserCatalogueServiceInterface {
     private final UserCatalogueRepository userCatalogueRepository;
     private final UserCatalogueMapper userCatalogueMapper;
+    private final QuerySpecBuilder specBuilder;
 
 
     @Override
@@ -45,16 +42,16 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     @Transactional
-    public UserCatalogueResource update(Long id, UpdateUserCatalogueRequest userCatalogue) {
-        UserCatalogue userCata = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy nguười dùng!"));
-        userCatalogueMapper.updateEntity(userCatalogue, userCata);
-        UserCatalogue updated = userCatalogueRepository.save(userCata);
+    public UserCatalogueResource update(Long id, UpdateUserCatalogueRequest userCatalogueRequest) {
+        var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy nguười dùng!");
+        userCatalogueMapper.updateEntity(userCatalogueRequest, userCatalogue);
+        UserCatalogue updated = userCatalogueRepository.save(userCatalogue);
 
         return userCatalogueMapper.toResource(updated);
     }
 
     public UserCatalogueResource findById(Long id) {
-        UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
+        var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy user catalogue này!");
         return userCatalogueMapper.toResource(userCatalogue);
     }
 
@@ -63,7 +60,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     }
 
     public UserCatalogueResource destroy(Long id) {
-        UserCatalogue userCatalogue = userCatalogueRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Không tìm thấy user catalogue này!"));
+        var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy user catalogue này!");
         userCatalogueRepository.delete(userCatalogue);
         return userCatalogueMapper.toResource(userCatalogue);
     }
@@ -82,18 +79,8 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
 
     @Override
     public Page<UserCatalogueResource> paginate(Map<String, String[]> parameters) {
-        int page = Math.max(1, Helpers.parseIntSafe(parameters.get("page"), 1));
-        int perPage = Math.clamp(Helpers.parseIntSafe(parameters.get("perPage"), 20), 1, 100);
-        Sort sort = createSort(parameters.get("sort") != null ? parameters.get("sort")[0] : "id");
-        String keyword = FilterParameter.filterKeyword(parameters);
-        Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
-        Map<String, Map<String, String>> filterComplex = FilterParameter.filterComplex(parameters);
-
-        Specification<UserCatalogue> specs = Specification.where(
-                        BaseSpecification.<UserCatalogue>keyword(keyword, "name")
-                ).and(BaseSpecification.<UserCatalogue>whereSpec(filterSimple))
-                .and(BaseSpecification.<UserCatalogue>whereComplex(filterComplex));
-        Pageable pageable = PageRequest.of(page - 1, perPage, sort);
+        Specification<UserCatalogue> specs = specBuilder.buildSpecification(parameters);
+        Pageable pageable = specBuilder.buildPageable(parameters);
         return userCatalogueRepository.findAll(specs, pageable).map(userCatalogueMapper::toResource);
     }
 
