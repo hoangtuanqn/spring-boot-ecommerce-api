@@ -49,7 +49,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     }
 
     public UserCatalogueResource findById(Long id) {
-        var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy user catalogue này!");
+        var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy use   r catalogue này!");
         return userCatalogueMapper.toResource(userCatalogue);
     }
 

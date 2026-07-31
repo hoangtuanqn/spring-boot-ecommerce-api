@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
+import mst.local.mstsoftware.modules.products.requests.UpdateCategoryRequest;
 import mst.local.mstsoftware.modules.products.resources.CategoryResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
@@ -27,6 +28,10 @@ public class CategoryController extends BaseController {
     @PostMapping
     public ResponseEntity<ApiResource<CategoryResource>> store(@Valid @RequestBody CreateCategoryRequest request) {
         return created(categoryService.store(request), "Thêm danh mục mới thành công!");
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResource<CategoryResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateCategoryRequest request) {
+        return ok(categoryService.update(id, request), "Cập nhật danh mục thành công!");
     }
 }
