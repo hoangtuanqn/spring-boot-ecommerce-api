@@ -7,6 +7,7 @@ import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
 import mst.local.mstsoftware.modules.products.requests.UpdateCategoryRequest;
 import mst.local.mstsoftware.modules.products.resources.CategoryResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
+import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +39,11 @@ public class CategoryController extends BaseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResource<CategoryResource>> destroy(@PathVariable Long id) {
         return ok(categoryService.destroy(id), "Xóa danh mục thành công!");
+    }
+
+    @DeleteMapping("/batch-delete")
+    public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
+        categoryService.deleteMultiple(request.getIds());
+        return ok(null, "Xóa tất cả category thành công!");
     }
 }

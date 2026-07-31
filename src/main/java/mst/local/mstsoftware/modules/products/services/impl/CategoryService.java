@@ -2,6 +2,7 @@ package mst.local.mstsoftware.modules.products.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.helpers.CrudValidationHelpers;
 import mst.local.mstsoftware.modules.products.entities.Category;
 import mst.local.mstsoftware.modules.products.mappers.CategoryMapper;
 import mst.local.mstsoftware.modules.products.repositories.CategoryRepository;
@@ -44,6 +45,11 @@ public class CategoryService extends BaseService implements CategoryServiceInter
         var category = findOrThrow(categoryRepository.findById(id), "Không tìm thấy danh mục!");
         categoryRepository.delete(category);
         return categoryMapper.toResource(category);
+    }
+
+    @Override
+    public void deleteMultiple(List<Long> ids) {
+        CrudValidationHelpers.deleteMultipleOrThrow(categoryRepository, ids, Category::getId, "Category");
     }
 
 

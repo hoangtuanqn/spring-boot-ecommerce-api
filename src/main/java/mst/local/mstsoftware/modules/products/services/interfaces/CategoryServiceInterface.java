@@ -14,4 +14,7 @@ public interface CategoryServiceInterface {
     public CategoryResource update(Long id, UpdateCategoryRequest categoryRequest);
 
     public CategoryResource destroy(Long id);
+
+    public void deleteMultiple(List<Long> ids);
+
 }
