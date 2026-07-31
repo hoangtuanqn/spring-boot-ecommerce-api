@@ -36,8 +36,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     @Transactional
     public UserCatalogueResource store(CreateUserCatalogueRequest userCatalogueRequest) {
         UserCatalogue userCatalogue = userCatalogueMapper.toEntity(userCatalogueRequest);
-        UserCatalogue created = userCatalogueRepository.save(userCatalogue);
-        return userCatalogueMapper.toResource(created);
+        return userCatalogueMapper.toResource(userCatalogueRepository.save(userCatalogue));
     }
 
     @Override
@@ -45,9 +44,8 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     public UserCatalogueResource update(Long id, UpdateUserCatalogueRequest userCatalogueRequest) {
         var userCatalogue = findOrThrow(userCatalogueRepository.findById(id), "Không tìm thấy nguười dùng!");
         userCatalogueMapper.updateEntity(userCatalogueRequest, userCatalogue);
-        UserCatalogue updated = userCatalogueRepository.save(userCatalogue);
 
-        return userCatalogueMapper.toResource(updated);
+        return userCatalogueMapper.toResource(userCatalogueRepository.save(userCatalogue));
     }
 
     public UserCatalogueResource findById(Long id) {
