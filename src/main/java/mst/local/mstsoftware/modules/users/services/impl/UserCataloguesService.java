@@ -1,9 +1,9 @@
 package mst.local.mstsoftware.modules.users.services.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.helpers.CrudValidationHelpers;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.mappers.UserCatalogueMapper;
@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -66,13 +64,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
     @Override
     @Transactional
     public void deleteMultiple(List<Long> ids) {
-        var users = userCatalogueRepository.findAllById(ids);
-        if (users.size() != ids.size()) {
-            Set<Long> foundIds = users.stream().map(UserCatalogue::getId).collect(Collectors.toSet());
-            List<Long> notFoundIds = ids.stream().filter(id -> !foundIds.contains(id)).toList();
-            throw new EntityNotFoundException("Không tìm thấy các id sau: " + notFoundIds);
-        }
-        userCatalogueRepository.deleteAll(users);
+        CrudValidationHelpers.deleteMultipleOrThrow(userCatalogueRepository, ids, UserCatalogue::getId, "User Catalogue");
     }
 
     @Override
