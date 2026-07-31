@@ -27,11 +27,11 @@ public class UserService extends BaseService implements UserServiceInterface {
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
-        String email = request.getEmail();
+        String email = request.email();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadCredentialsException("Email hoặc mật khẩu không chính xác!"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
         String accessToken = jwtService.generateToken(user.getId(), email);
