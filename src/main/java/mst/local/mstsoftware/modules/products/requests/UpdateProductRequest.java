@@ -10,13 +10,16 @@ public record UpdateProductRequest(
         String title,
         String description,
 
+        @NotNull(message = "Giá tiền không được để trống!")
         @Min(value = 0, message = "Giá tiền phải lớn hơn 0!")
         @Max(value = 100_000_000, message = "Số tiền phải nhỏ hơn 100 triệu!")
         BigDecimal price,
 
         @NotNull(message = "Category không được để trống")
+        @Positive(message = "Category ID không hợp lệ!")
         Long categoryId,
 
+        @NotNull(message = "Số lượng không được để trống!")
         @Min(value = 0, message = "Số lượng phải lớn hơn 0!")
         @Max(value = 10_000, message = "Số lượng phải nhỏ hơn 10.000!")
         Integer quantity
