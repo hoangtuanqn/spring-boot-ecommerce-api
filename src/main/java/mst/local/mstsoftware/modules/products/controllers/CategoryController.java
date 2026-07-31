@@ -58,7 +58,7 @@ public class CategoryController extends BaseController {
 
     @DeleteMapping("/batch-delete")
     public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
-        categoryService.deleteMultiple(request.getIds());
+        categoryService.deleteMultiple(request.ids());
         return ok(null, "Xóa tất cả category thành công!");
     }
 }

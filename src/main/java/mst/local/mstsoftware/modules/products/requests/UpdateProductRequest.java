@@ -4,15 +4,15 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
-public record CreateProductRequest(
+public record UpdateProductRequest(
         @NotBlank(message = "Tên sản phẩm không được để trống!")
         @Size(max = 255, message = "Tên sản phẩm không được quá 255 kí tự!")
         String title,
         String description,
 
         @NotNull(message = "Giá tiền không được để trống!")
-        @DecimalMin(value = "0", message = "Giá tiền phải lớn hơn hoặc bằng 0!")
-        @DecimalMax(value = "100000000", message = "Số tiền phải nhỏ hơn hoặc bằng 100 triệu!")
+        @DecimalMin(value = "0", inclusive = false, message = "Giá tiền phải lớn hơn 0!")
+        @DecimalMax(value = "100000000", message = "Số tiền phải nhỏ hơn 100 triệu!")
         BigDecimal price,
 
         @NotNull(message = "Category không được để trống")

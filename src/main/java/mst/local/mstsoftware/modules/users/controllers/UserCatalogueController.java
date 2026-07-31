@@ -43,7 +43,7 @@ public class UserCatalogueController extends BaseController {
 
     @DeleteMapping("/batch-delete")
     public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
-        userCatalogueService.deleteMultiple(request.getIds());
+        userCatalogueService.deleteMultiple(request.ids());
         return ok(null, "Xóa tất cả user catalogues thành công!");
     }
 

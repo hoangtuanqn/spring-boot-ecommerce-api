@@ -1,16 +1,15 @@
 package mst.local.mstsoftware.modules.products.services.interfaces;
 
 import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
+import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 
 public interface ProductServiceInterface {
-    //
     public ProductResource store(CreateProductRequest productRequest);
 
-    //
     public ProductResource findById(Long id);
-//
-//    public ProductResource update(Long id, UpdateCategoryRequest productRequest);
+
+    public ProductResource update(Long id, UpdateProductRequest productRequest);
 //
 //    public ProductResource destroy(Long id);
 //
