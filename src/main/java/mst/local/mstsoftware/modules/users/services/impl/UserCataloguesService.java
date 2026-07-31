@@ -70,7 +70,7 @@ public class UserCataloguesService extends BaseService implements UserCatalogueS
         if (users.size() != ids.size()) {
             Set<Long> foundIds = users.stream().map(UserCatalogue::getId).collect(Collectors.toSet());
             List<Long> notFoundIds = ids.stream().filter(id -> !foundIds.contains(id)).toList();
-            throw new EntityNotFoundException("Không tìm thấy  các id sau: " + notFoundIds);
+            throw new EntityNotFoundException("Không tìm thấy các id sau: " + notFoundIds);
         }
         userCatalogueRepository.deleteAll(users);
     }
