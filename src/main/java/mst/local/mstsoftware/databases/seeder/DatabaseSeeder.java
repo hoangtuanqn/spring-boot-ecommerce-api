@@ -4,6 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import mst.local.mstsoftware.modules.products.entities.Category;
+import mst.local.mstsoftware.modules.products.entities.Product;
+import mst.local.mstsoftware.modules.products.repositories.CategoryRepository;
+import mst.local.mstsoftware.modules.products.repositories.ProductRepository;
 import mst.local.mstsoftware.modules.users.entities.User;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
@@ -11,6 +15,8 @@ import mst.local.mstsoftware.modules.users.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @Component
@@ -22,6 +28,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserCatalogueRepository userCatalogueRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -44,6 +52,22 @@ public class DatabaseSeeder implements CommandLineRunner {
             userRepository.save(user);
 
         }
+
+        if (isCategoryAndProductTableEmpty()) {
+            Category category = Category.builder()
+                    .name("Iphone").build();
+
+            category = categoryRepository.save(category);
+
+            Product product = Product.builder()
+                    .title("Iphone 17")
+                    .description("Iphone 17 hàng chính hãng!")
+                    .price(BigDecimal.valueOf(50000000))
+                    .quantity(100)
+                    .category(category)
+                    .build();
+            productRepository.save(product);
+        }
     }
 
     private boolean isUserTableEmpty() {
@@ -54,6 +78,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private boolean isUserCatalogueTableEmpty() {
         return userCatalogueRepository.count() == 0;
+    }
+
+    private boolean isCategoryAndProductTableEmpty() {
+        return categoryRepository.count() == 0 && productRepository.count() == 0;
     }
 
 }

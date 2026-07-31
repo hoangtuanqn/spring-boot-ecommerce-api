@@ -1,5 +1,6 @@
 package mst.local.mstsoftware.modules.users.mappers;
 
+import mst.local.mstsoftware.mappers.BaseMapper;
 import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.CreateUserCatalogueRequest;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.UpdateUserCatalogueRequest;
