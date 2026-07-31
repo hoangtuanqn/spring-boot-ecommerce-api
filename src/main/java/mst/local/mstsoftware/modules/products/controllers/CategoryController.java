@@ -1,5 +1,6 @@
 package mst.local.mstsoftware.modules.products.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
@@ -9,10 +10,12 @@ import mst.local.mstsoftware.modules.products.resources.CategoryResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -22,6 +25,13 @@ public class CategoryController extends BaseController {
     private final CategoryServiceInterface categoryService;
 
     @GetMapping
+    public ResponseEntity<ApiResource<Page<CategoryResource>>> paginate(HttpServletRequest request) {
+        Map<String, String[]> parameters = request.getParameterMap();
+        Page<CategoryResource> page = categoryService.paginate(parameters);
+        return ok(page, "Hiển thị danh sách category thành công!");
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<ApiResource<List<CategoryResource>>> index() {
         return ok(categoryService.list(), "Lấy danh sách danh mục sản phẩm thành công!");
     }
