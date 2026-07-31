@@ -11,8 +11,8 @@ public record UpdateProductRequest(
         String description,
 
         @NotNull(message = "Giá tiền không được để trống!")
-        @Min(value = 0, message = "Giá tiền phải lớn hơn 0!")
-        @Max(value = 100_000_000, message = "Số tiền phải nhỏ hơn 100 triệu!")
+        @DecimalMin(value = "0", inclusive = false, message = "Giá tiền phải lớn hơn 0!")
+        @DecimalMax(value = "100000000", message = "Số tiền phải nhỏ hơn 100 triệu!")
         BigDecimal price,
 
         @NotNull(message = "Category không được để trống")
