@@ -8,6 +8,7 @@ import mst.local.mstsoftware.modules.products.mappers.ProductMapper;
 import mst.local.mstsoftware.modules.products.repositories.CategoryRepository;
 import mst.local.mstsoftware.modules.products.repositories.ProductRepository;
 import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
+import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
@@ -36,6 +37,15 @@ public class ProductService extends BaseService implements ProductServiceInterfa
     public ProductResource findById(Long id) {
         var product = findOrThrow(productRepository.findById(id), "Sản phẩm này không tồn tại!");
         return productMapper.toResource(product);
+    }
+
+    @Override
+    public ProductResource update(Long id, UpdateProductRequest productRequest) {
+        var product = findOrThrow(productRepository.findById(id), "Sản phẩm này không tồn tại!");
+        var category = findOrThrow(categoryRepository.findById(productRequest.categoryId()), "Danh mục không tồn tại!");
+        productMapper.updateEntity(productRequest, product);
+        product.setCategory(category);
+        return productMapper.toResource(productRepository.save(product));
     }
 
 }

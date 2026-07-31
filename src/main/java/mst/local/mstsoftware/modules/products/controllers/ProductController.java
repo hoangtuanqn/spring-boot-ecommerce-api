@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
+import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
@@ -24,5 +25,10 @@ public class ProductController extends BaseController {
     @PostMapping
     public ResponseEntity<ApiResource<ProductResource>> store(@Valid @RequestBody CreateProductRequest request) {
         return created(productService.store(request), "Thêm sản phẩm mới thành công!");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResource<ProductResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
+        return ok(productService.update(id, request), "Cập nhật sản phẩm thành công!");
     }
 }
