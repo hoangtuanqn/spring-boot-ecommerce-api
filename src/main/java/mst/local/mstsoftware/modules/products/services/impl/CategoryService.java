@@ -40,6 +40,12 @@ public class CategoryService extends BaseService implements CategoryServiceInter
     }
 
     @Override
+    public CategoryResource findById(Long id) {
+        var category = findOrThrow(categoryRepository.findById(id), "Không tìm thấy danh mục!");
+        return categoryMapper.toResource(category);
+    }
+
+    @Override
     public CategoryResource update(Long id, UpdateCategoryRequest categoryRequest) {
         var category = findOrThrow(categoryRepository.findById(id), "Không tìm thấy danh mục!");
         categoryMapper.updateEntity(categoryRequest, category);
@@ -64,5 +70,4 @@ public class CategoryService extends BaseService implements CategoryServiceInter
         Pageable pageable = specBuilder.buildPageable(parameters);
         return categoryRepository.findAll(specs, pageable).map(categoryMapper::toResource);
     }
-
 }

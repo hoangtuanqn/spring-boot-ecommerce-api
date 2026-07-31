@@ -13,6 +13,8 @@ public interface CategoryServiceInterface {
 
     public CategoryResource store(CreateCategoryRequest categoryRequest);
 
+    public CategoryResource findById(Long id);
+
     public CategoryResource update(Long id, UpdateCategoryRequest categoryRequest);
 
     public CategoryResource destroy(Long id);

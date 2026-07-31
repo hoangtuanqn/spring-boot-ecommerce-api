@@ -31,6 +31,11 @@ public class CategoryController extends BaseController {
         return ok(page, "Hiển thị danh sách category thành công!");
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResource<CategoryResource>> show(@PathVariable Long id) {
+        return ok(categoryService.findById(id), "Lấy chi tiết category thành công!");
+    }
+
     @GetMapping("/all")
     public ResponseEntity<ApiResource<List<CategoryResource>>> index() {
         return ok(categoryService.list(), "Lấy danh sách danh mục sản phẩm thành công!");
