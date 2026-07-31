@@ -34,4 +34,9 @@ public class CategoryController extends BaseController {
     public ResponseEntity<ApiResource<CategoryResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateCategoryRequest request) {
         return ok(categoryService.update(id, request), "Cập nhật danh mục thành công!");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResource<CategoryResource>> destroy(@PathVariable Long id) {
+        return ok(categoryService.destroy(id), "Xóa danh mục thành công!");
+    }
 }

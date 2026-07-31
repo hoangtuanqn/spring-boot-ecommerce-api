@@ -39,5 +39,12 @@ public class CategoryService extends BaseService implements CategoryServiceInter
         return categoryMapper.toResource(categoryRepository.save(category));
     }
 
+    @Override
+    public CategoryResource destroy(Long id) {
+        var category = findOrThrow(categoryRepository.findById(id), "Không tìm thấy danh mục!");
+        categoryRepository.delete(category);
+        return categoryMapper.toResource(category);
+    }
+
 
 }
