@@ -1,14 +1,14 @@
 package mst.local.mstsoftware.modules.products.controllers;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
+import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
 import mst.local.mstsoftware.modules.products.resources.CategoryResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +22,11 @@ public class CategoryController extends BaseController {
     @GetMapping
     public ResponseEntity<ApiResource<List<CategoryResource>>> index() {
         return ok(categoryService.list(), "Lấy danh sách danh mục sản phẩm thành công!");
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResource<CategoryResource>> store(@Valid @RequestBody CreateCategoryRequest request) {
+        return created(categoryService.store(request), "Thêm danh mục mới thành công!");
+
     }
 }
