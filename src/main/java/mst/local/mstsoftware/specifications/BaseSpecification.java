@@ -34,7 +34,7 @@ public class BaseSpecification<T> {
             if (filters == null || filters.isEmpty()) return cb.conjunction();
             Predicate[] predicates = filters.entrySet().stream()
                     .filter(f -> f.getValue() != null && !f.getValue().isEmpty())
-                    .map(f -> cb.equal(root.get(f.getKey()), f.getValue()))
+                    .map(f -> cb.equal(resolvePath(root, f.getKey()), f.getValue()))
                     .toArray(Predicate[]::new);
 
             return cb.and(predicates);
@@ -124,4 +124,14 @@ public class BaseSpecification<T> {
         return raw;
     }
 
+    private static <T> Path<?> resolvePath(Root<T> root, String field) {
+        // Hỗ trợ "category.id" → root.get("category").get("id")
+        // Vì ko sử dụng kiểu category_id nữa mà sử dụng "category" để lấy dữ liệu cha
+        String[] parts = field.split("\\.");
+        Path<?> path = root.get(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            path = ((Path<?>) path).get(parts[i]);
+        }
+        return path;
+    }
 }
