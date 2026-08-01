@@ -34,15 +34,7 @@ public class UserController extends BaseController {
     @GetMapping("me")
     public ResponseEntity<ApiResource<UserResource>> me(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
-        User user = userService.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
-
-        UserResource userResource = UserResource.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .build();
-        return ResponseEntity.ok(ApiResource.success(userResource, "Lấy thông tin thành công!"));
+        return ResponseEntity.ok(ApiResource.success(userService.getMe(email), "Lấy thông tin thành công!"));
     }
 
     @PostMapping("refresh")
