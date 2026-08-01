@@ -31,7 +31,6 @@ public class Product {
     @Column(nullable = false)
     private String title;
 
-    @Lob
     @Column(columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false, precision = 10, scale = 2)
