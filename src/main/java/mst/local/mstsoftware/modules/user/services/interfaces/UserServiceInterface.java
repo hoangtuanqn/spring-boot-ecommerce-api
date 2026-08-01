@@ -1,10 +1,11 @@
 package mst.local.mstsoftware.modules.user.services.interfaces;
 
-import java.util.Optional;
-
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
+import mst.local.mstsoftware.modules.user.resources.UserResource;
+
+import java.util.Optional;
 
 public interface UserServiceInterface {
     AuthResult authenticate(LoginRequest request);
@@ -12,4 +13,6 @@ public interface UserServiceInterface {
     Optional<User> findById(Long userId);
 
     Optional<User> findByEmail(String email);
+
+    UserResource getMe(String email);
 }

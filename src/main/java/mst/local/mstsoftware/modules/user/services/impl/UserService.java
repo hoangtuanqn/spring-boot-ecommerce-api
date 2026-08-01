@@ -6,8 +6,8 @@ import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
 import mst.local.mstsoftware.modules.user.resources.UserResource;
-import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.modules.user.services.interfaces.RefreshTokenServiceInterface.IssuedToken;
+import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -36,7 +36,12 @@ public class UserService extends BaseService implements UserServiceInterface {
         }
         String accessToken = jwtService.generateToken(user.getId(), email);
         IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
-        UserResource userResource = new UserResource(user.getId(), email, user.getName(), user.getPhone());
+        UserResource userResource = UserResource.builder()
+                .id(user.getId())
+                .email(email)
+                .name(user.getName())
+                .phone(user.getPhone())
+                .build();
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
 
@@ -48,6 +53,17 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserResource getMe(String email) {
+        var user = findOrThrow(findByEmail(email), "Người dùng này không tồn tại!");
+        return UserResource.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 
 }
