@@ -1,16 +1,16 @@
-package mst.local.mstsoftware.modules.products.services.impl;
+package mst.local.mstsoftware.modules.product.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.helpers.CrudValidationHelpers;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
-import mst.local.mstsoftware.modules.products.entities.Category;
-import mst.local.mstsoftware.modules.products.mappers.CategoryMapper;
-import mst.local.mstsoftware.modules.products.repositories.CategoryRepository;
-import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
-import mst.local.mstsoftware.modules.products.requests.UpdateCategoryRequest;
-import mst.local.mstsoftware.modules.products.resources.CategoryResource;
-import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
+import mst.local.mstsoftware.modules.product.entities.Category;
+import mst.local.mstsoftware.modules.product.mappers.CategoryMapper;
+import mst.local.mstsoftware.modules.product.repositories.CategoryRepository;
+import mst.local.mstsoftware.modules.product.requests.CreateCategoryRequest;
+import mst.local.mstsoftware.modules.product.requests.UpdateCategoryRequest;
+import mst.local.mstsoftware.modules.product.resources.CategoryResource;
+import mst.local.mstsoftware.modules.product.services.interfaces.CategoryServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

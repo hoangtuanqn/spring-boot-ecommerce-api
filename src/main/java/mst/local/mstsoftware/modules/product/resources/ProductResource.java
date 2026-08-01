@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.modules.products.resources;
+package mst.local.mstsoftware.modules.product.resources;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

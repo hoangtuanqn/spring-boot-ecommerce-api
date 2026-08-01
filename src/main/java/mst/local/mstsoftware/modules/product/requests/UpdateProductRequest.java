@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.modules.products.requests;
+package mst.local.mstsoftware.modules.product.requests;
 
 import jakarta.validation.constraints.*;
 

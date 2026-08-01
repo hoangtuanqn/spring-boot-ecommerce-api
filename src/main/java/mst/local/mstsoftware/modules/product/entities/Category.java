@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.modules.products.entities;
+package mst.local.mstsoftware.modules.product.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

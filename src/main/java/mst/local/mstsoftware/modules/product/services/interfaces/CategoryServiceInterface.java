@@ -1,9 +1,10 @@
-package mst.local.mstsoftware.modules.products.services.interfaces;
+package mst.local.mstsoftware.modules.product.services.interfaces;
 
-import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
-import mst.local.mstsoftware.modules.products.requests.UpdateCategoryRequest;
-import mst.local.mstsoftware.modules.products.resources.CategoryResource;
 import org.springframework.data.domain.Page;
+
+import mst.local.mstsoftware.modules.product.requests.CreateCategoryRequest;
+import mst.local.mstsoftware.modules.product.requests.UpdateCategoryRequest;
+import mst.local.mstsoftware.modules.product.resources.CategoryResource;
 
 import java.util.List;
 import java.util.Map;

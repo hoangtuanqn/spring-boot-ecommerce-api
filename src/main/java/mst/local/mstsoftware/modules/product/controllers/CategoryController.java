@@ -1,13 +1,13 @@
-package mst.local.mstsoftware.modules.products.controllers;
+package mst.local.mstsoftware.modules.product.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
-import mst.local.mstsoftware.modules.products.requests.CreateCategoryRequest;
-import mst.local.mstsoftware.modules.products.requests.UpdateCategoryRequest;
-import mst.local.mstsoftware.modules.products.resources.CategoryResource;
-import mst.local.mstsoftware.modules.products.services.interfaces.CategoryServiceInterface;
+import mst.local.mstsoftware.modules.product.requests.CreateCategoryRequest;
+import mst.local.mstsoftware.modules.product.requests.UpdateCategoryRequest;
+import mst.local.mstsoftware.modules.product.resources.CategoryResource;
+import mst.local.mstsoftware.modules.product.services.interfaces.CategoryServiceInterface;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.data.domain.Page;

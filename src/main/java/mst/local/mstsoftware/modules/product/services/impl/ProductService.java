@@ -1,17 +1,17 @@
-package mst.local.mstsoftware.modules.products.services.impl;
+package mst.local.mstsoftware.modules.product.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.helpers.CrudValidationHelpers;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
-import mst.local.mstsoftware.modules.products.entities.Product;
-import mst.local.mstsoftware.modules.products.mappers.ProductMapper;
-import mst.local.mstsoftware.modules.products.repositories.CategoryRepository;
-import mst.local.mstsoftware.modules.products.repositories.ProductRepository;
-import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
-import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
-import mst.local.mstsoftware.modules.products.resources.ProductResource;
-import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
+import mst.local.mstsoftware.modules.product.entities.Product;
+import mst.local.mstsoftware.modules.product.mappers.ProductMapper;
+import mst.local.mstsoftware.modules.product.repositories.CategoryRepository;
+import mst.local.mstsoftware.modules.product.repositories.ProductRepository;
+import mst.local.mstsoftware.modules.product.requests.CreateProductRequest;
+import mst.local.mstsoftware.modules.product.requests.UpdateProductRequest;
+import mst.local.mstsoftware.modules.product.resources.ProductResource;
+import mst.local.mstsoftware.modules.product.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

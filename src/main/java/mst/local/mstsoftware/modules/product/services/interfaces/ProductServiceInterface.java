@@ -1,9 +1,10 @@
-package mst.local.mstsoftware.modules.products.services.interfaces;
+package mst.local.mstsoftware.modules.product.services.interfaces;
 
-import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
-import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
-import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import org.springframework.data.domain.Page;
+
+import mst.local.mstsoftware.modules.product.requests.CreateProductRequest;
+import mst.local.mstsoftware.modules.product.requests.UpdateProductRequest;
+import mst.local.mstsoftware.modules.product.resources.ProductResource;
 
 import java.util.List;
 import java.util.Map;
