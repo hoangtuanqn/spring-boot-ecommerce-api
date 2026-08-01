@@ -10,8 +10,8 @@ public interface ProductServiceInterface {
     public ProductResource findById(Long id);
 
     public ProductResource update(Long id, UpdateProductRequest productRequest);
-//
-//    public ProductResource destroy(Long id);
+
+    public ProductResource destroy(Long id);
 //
 //    public void deleteMultiple(List<Long> ids);
 //

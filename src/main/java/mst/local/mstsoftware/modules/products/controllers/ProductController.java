@@ -31,4 +31,9 @@ public class ProductController extends BaseController {
     public ResponseEntity<ApiResource<ProductResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
         return ok(productService.update(id, request), "Cập nhật sản phẩm thành công!");
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResource<ProductResource>> destroy(@PathVariable Long id) {
+        return ok(productService.destroy(id), "Xóa sản phẩm thành công!");
+    }
 }

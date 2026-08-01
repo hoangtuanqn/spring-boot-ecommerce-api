@@ -48,4 +48,11 @@ public class ProductService extends BaseService implements ProductServiceInterfa
         return productMapper.toResource(productRepository.save(product));
     }
 
+    @Override
+    public ProductResource destroy(Long id) {
+        var product = findOrThrow(productRepository.findById(id), "Sản phẩm này không tồn tại!");
+        productRepository.delete(product);
+        return productMapper.toResource(product);
+    }
+
 }
