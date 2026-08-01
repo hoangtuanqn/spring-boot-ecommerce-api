@@ -8,10 +8,11 @@ import mst.local.mstsoftware.modules.product.entities.Category;
 import mst.local.mstsoftware.modules.product.entities.Product;
 import mst.local.mstsoftware.modules.product.repositories.CategoryRepository;
 import mst.local.mstsoftware.modules.product.repositories.ProductRepository;
-import mst.local.mstsoftware.modules.users.entities.User;
-import mst.local.mstsoftware.modules.users.entities.UserCatalogue;
-import mst.local.mstsoftware.modules.users.repositories.UserCatalogueRepository;
-import mst.local.mstsoftware.modules.users.repositories.UserRepository;
+import mst.local.mstsoftware.modules.user.entities.User;
+import mst.local.mstsoftware.modules.user.entities.UserCatalogue;
+import mst.local.mstsoftware.modules.user.repositories.UserCatalogueRepository;
+import mst.local.mstsoftware.modules.user.repositories.UserRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

@@ -3,7 +3,8 @@ package mst.local.mstsoftware.cronjob;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import mst.local.mstsoftware.modules.users.repositories.RefreshTokenRepository;
+import mst.local.mstsoftware.modules.user.repositories.RefreshTokenRepository;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

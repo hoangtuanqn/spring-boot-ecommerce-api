@@ -8,7 +8,7 @@ import mst.local.mstsoftware.modules.product.requests.CreateProductRequest;
 import mst.local.mstsoftware.modules.product.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.product.resources.ProductResource;
 import mst.local.mstsoftware.modules.product.services.interfaces.ProductServiceInterface;
-import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
+import mst.local.mstsoftware.modules.user.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
