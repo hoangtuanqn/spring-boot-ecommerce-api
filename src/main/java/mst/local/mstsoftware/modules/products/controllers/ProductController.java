@@ -1,5 +1,6 @@
 package mst.local.mstsoftware.modules.products.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
@@ -9,14 +10,24 @@ import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/products")
 public class ProductController extends BaseController {
     private final ProductServiceInterface productService;
+
+    @GetMapping
+    public ResponseEntity<ApiResource<Page<ProductResource>>> paginate(HttpServletRequest request) {
+        Map<String, String[]> parameters = request.getParameterMap();
+        Page<ProductResource> page = productService.paginate(parameters);
+        return ok(page, "Hiển thị danh sách sản phẩm thành công!");
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResource<ProductResource>> show(@PathVariable Long id) {
