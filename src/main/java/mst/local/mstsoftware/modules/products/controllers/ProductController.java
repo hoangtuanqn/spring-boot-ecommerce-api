@@ -7,6 +7,7 @@ import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
 import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
+import mst.local.mstsoftware.modules.users.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +36,11 @@ public class ProductController extends BaseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResource<ProductResource>> destroy(@PathVariable Long id) {
         return ok(productService.destroy(id), "Xóa sản phẩm thành công!");
+    }
+
+    @DeleteMapping("/batch-delete")
+    public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
+        productService.deleteMultiple(request.ids());
+        return ok(null, "Xóa tất cả sản phâm thành công!");
     }
 }

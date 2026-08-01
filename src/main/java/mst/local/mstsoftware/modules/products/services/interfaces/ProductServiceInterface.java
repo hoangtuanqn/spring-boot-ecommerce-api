@@ -4,6 +4,8 @@ import mst.local.mstsoftware.modules.products.requests.CreateProductRequest;
 import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 
+import java.util.List;
+
 public interface ProductServiceInterface {
     public ProductResource store(CreateProductRequest productRequest);
 
@@ -12,8 +14,8 @@ public interface ProductServiceInterface {
     public ProductResource update(Long id, UpdateProductRequest productRequest);
 
     public ProductResource destroy(Long id);
-//
-//    public void deleteMultiple(List<Long> ids);
+
+    public void deleteMultiple(List<Long> ids);
 //
 //    public Page<ProductResource> paginate(Map<String, String[]> parameters);
 }

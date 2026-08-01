@@ -2,6 +2,7 @@ package mst.local.mstsoftware.modules.products.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.helpers.CrudValidationHelpers;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
 import mst.local.mstsoftware.modules.products.entities.Product;
 import mst.local.mstsoftware.modules.products.mappers.ProductMapper;
@@ -13,6 +14,8 @@ import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -53,6 +56,11 @@ public class ProductService extends BaseService implements ProductServiceInterfa
         var product = findOrThrow(productRepository.findById(id), "Sản phẩm này không tồn tại!");
         productRepository.delete(product);
         return productMapper.toResource(product);
+    }
+
+    @Override
+    public void deleteMultiple(List<Long> ids) {
+        CrudValidationHelpers.deleteMultipleOrThrow(productRepository, ids, Product::getId, "Product");
     }
 
 }
