@@ -13,9 +13,13 @@ import mst.local.mstsoftware.modules.products.requests.UpdateProductRequest;
 import mst.local.mstsoftware.modules.products.resources.ProductResource;
 import mst.local.mstsoftware.modules.products.services.interfaces.ProductServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -61,6 +65,13 @@ public class ProductService extends BaseService implements ProductServiceInterfa
     @Override
     public void deleteMultiple(List<Long> ids) {
         CrudValidationHelpers.deleteMultipleOrThrow(productRepository, ids, Product::getId, "Product");
+    }
+
+    @Override
+    public Page<ProductResource> paginate(Map<String, String[]> parameters) {
+        Specification<Product> specs = specBuilder.buildSpecification(parameters, "title", "description");
+        Pageable pageable = specBuilder.buildPageable(parameters);
+        return productRepository.findAll(specs, pageable).map(productMapper::toResource);
     }
 
 }
