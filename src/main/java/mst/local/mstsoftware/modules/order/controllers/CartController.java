@@ -50,7 +50,6 @@ public class CartController extends BaseController {
             @Valid @RequestBody UpdateCartItemRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        log.info("vô đây rồi");
         return ok(cartService.updateItem(userDetails.getId(), productId, request), "Cập nhật giỏ hàng thành công!");
     }
 }
