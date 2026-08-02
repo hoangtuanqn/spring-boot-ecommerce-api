@@ -1,8 +1,8 @@
 package mst.local.mstsoftware.modules.order.services.interfaces;
 
 import mst.local.mstsoftware.modules.order.requests.AddCartItemRequest;
-import mst.local.mstsoftware.modules.order.requests.CartResource;
 import mst.local.mstsoftware.modules.order.requests.UpdateCartItemRequest;
+import mst.local.mstsoftware.modules.order.resources.CartResource;
 
 import java.util.List;
 

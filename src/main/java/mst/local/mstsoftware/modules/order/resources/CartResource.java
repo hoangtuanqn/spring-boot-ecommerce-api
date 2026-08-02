@@ -1,6 +1,7 @@
-package mst.local.mstsoftware.modules.order.requests;
+package mst.local.mstsoftware.modules.order.resources;
 
 import lombok.Builder;
+import mst.local.mstsoftware.modules.order.requests.CartItemResource;
 
 import java.math.BigDecimal;
 import java.util.List;
