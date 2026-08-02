@@ -44,10 +44,10 @@ public class CartService extends BaseService implements CartServiceInterface {
 
         List<CartItemResource> items = entries.entrySet().stream().map(entry -> {
             Long productId = Long.valueOf(entry.getKey().toString());
-            int quantity = Integer.valueOf(entry.getValue().toString());
+            int quantity = Integer.parseInt(entry.getValue().toString());
 
             Product product = productRepository.findById(productId).orElse(null);
-            if (product == null) {
+            if (product == null || product.getQuantity() < quantity) {
                 redis.opsForHash().delete(key, entry.getKey());
                 return null;
             }
@@ -88,7 +88,7 @@ public class CartService extends BaseService implements CartServiceInterface {
 
         if (newQty > product.getQuantity()) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!");
+                    HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!. Hiện tại còn lại " + (product.getQuantity() - currentQty) + " sản phẩm!");
         }
         redis.opsForHash().put(key, field, String.valueOf(newQty));
         redis.expire(key, CART_TTL_DAYS, TimeUnit.DAYS);
@@ -102,13 +102,21 @@ public class CartService extends BaseService implements CartServiceInterface {
 
     @Override
     public void removeItem(Long userId, Long productId) {
-
+        String key = cartKey(userId);
+        Long deleted = redis.opsForHash().delete(key, productId.toString());
+        if (deleted == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không có trong giỏ hàng!");
+        }
     }
 
     @Override
-    public void clearCart(Long userId) {
-        redis.delete(cartKey(userId));
+    public void removeItemMany(Long userId, List<Long> productIds) {
+        String key = cartKey(userId);
+        productIds.stream().forEach(product -> {
+            redis.opsForHash().delete(key, product.toString());
+        });
     }
+
 
     private String cartKey(Long userId) {
         return CART_PREFIX + userId;
