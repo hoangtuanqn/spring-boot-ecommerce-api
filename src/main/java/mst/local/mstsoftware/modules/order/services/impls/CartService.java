@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -91,13 +91,33 @@ public class CartService extends BaseService implements CartServiceInterface {
                     HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!. Hiện tại còn lại " + (product.getQuantity() - currentQty) + " sản phẩm!");
         }
         redis.opsForHash().put(key, field, String.valueOf(newQty));
-        redis.expire(key, CART_TTL_DAYS, TimeUnit.DAYS);
+        redis.expire(key, Duration.ofDays(CART_TTL_DAYS));
         return getCart(userId);
     }
 
     @Override
     public CartResource updateItem(Long userId, Long productId, UpdateCartItemRequest request) {
-        return null;
+        String key = cartKey(userId);
+        String field = productId.toString();
+        int quantity = request.quantity();
+        Object existing = redis.opsForHash().get(key, field);
+        if (existing == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Sản phẩm không có trong giỏ hàng!");
+        }
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Sản phẩm không tồn tại!");
+        }
+        if (request.quantity() > product.getQuantity()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!. Hiện tại còn lại " + (product.getQuantity()) + " sản phẩm!");
+        }
+
+        redis.opsForHash().put(key, field, String.valueOf(quantity));
+        redis.expire(key, Duration.ofDays(CART_TTL_DAYS));
+        return getCart(userId);
     }
 
     @Override
