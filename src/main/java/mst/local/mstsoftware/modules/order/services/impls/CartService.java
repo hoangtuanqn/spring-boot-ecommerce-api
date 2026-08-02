@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.order.services.impls;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.modules.order.requests.AddCartItemRequest;
+import mst.local.mstsoftware.modules.order.requests.CartItemResource;
 import mst.local.mstsoftware.modules.order.requests.CartResource;
 import mst.local.mstsoftware.modules.order.requests.UpdateCartItemRequest;
 import mst.local.mstsoftware.modules.order.services.interfaces.CartServiceInterface;
@@ -14,6 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -31,7 +36,40 @@ public class CartService extends BaseService implements CartServiceInterface {
 
     @Override
     public CartResource getCart(Long userId) {
-        return null;
+        String key = cartKey(userId);
+        Map<Object, Object> entries = redis.opsForHash().entries(key);
+        if (entries.isEmpty()) {
+            return new CartResource(List.of(), BigDecimal.ZERO);
+        }
+
+        List<CartItemResource> items = entries.entrySet().stream().map(entry -> {
+            Long productId = Long.valueOf(entry.getKey().toString());
+            int quantity = Integer.valueOf(entry.getValue().toString());
+
+            Product product = productRepository.findById(productId).orElse(null);
+            if (product == null) {
+                redis.opsForHash().delete(key, entry.getKey());
+                return null;
+            }
+
+            BigDecimal subtotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
+
+            return CartItemResource.builder()
+                    .productId(productId)
+                    .productTitle(product.getTitle())
+                    .quantity(quantity)
+                    .unitPrice(product.getPrice())
+                    .subtotal(subtotal)
+                    .build();
+        }).filter(Objects::nonNull).toList();
+
+        BigDecimal total = items.stream()
+                .map(CartItemResource::subtotal).
+                reduce(BigDecimal.ZERO, BigDecimal::add);
+        return CartResource.builder()
+                .items(items)
+                .total(total)
+                .build();
     }
 
     @Override
