@@ -7,9 +7,10 @@ import mst.local.mstsoftware.modules.order.entities.OrderItem;
 import mst.local.mstsoftware.modules.order.enums.OrderStatus;
 import mst.local.mstsoftware.modules.order.mappers.OrderMapper;
 import mst.local.mstsoftware.modules.order.repositories.OrderRepository;
+import mst.local.mstsoftware.modules.order.requests.CancelOrderRequest;
 import mst.local.mstsoftware.modules.order.requests.CartItemResource;
-import mst.local.mstsoftware.modules.order.requests.CartResource;
 import mst.local.mstsoftware.modules.order.requests.CheckoutRequest;
+import mst.local.mstsoftware.modules.order.resources.CartResource;
 import mst.local.mstsoftware.modules.order.resources.OrderResource;
 import mst.local.mstsoftware.modules.order.services.interfaces.CartServiceInterface;
 import mst.local.mstsoftware.modules.order.services.interfaces.OrderServiceInterface;
@@ -84,6 +85,22 @@ public class OrderService extends BaseService implements OrderServiceInterface {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalPrice(total);
         request.productIds().forEach(productId -> cartService.removeItem(user.getId(), productId));
+        return orderMapper.toResource(orderRepository.save(order));
+    }
+
+    @Override
+    @Transactional
+    public OrderResource cancel(Long userId, Long orderId, CancelOrderRequest note) {
+        Order order = findOrThrow(orderRepository.findByIdAndUserId(orderId, userId), "Đơn hàng này của bạn không tồn tại!");
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể huỷ đơn hàng ở trạng thái chờ xử lý!");
+        }
+        order.getItems().forEach(item -> {
+            Product product = item.getProduct();
+            product.setQuantity(product.getQuantity() + item.getQuantity());
+            productRepository.save(product);
+        });
+        order.setStatus(OrderStatus.CANCELLED);
         return orderMapper.toResource(orderRepository.save(order));
     }
 }
