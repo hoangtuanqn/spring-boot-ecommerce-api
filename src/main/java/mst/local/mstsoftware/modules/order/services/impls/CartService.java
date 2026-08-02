@@ -44,10 +44,10 @@ public class CartService extends BaseService implements CartServiceInterface {
 
         List<CartItemResource> items = entries.entrySet().stream().map(entry -> {
             Long productId = Long.valueOf(entry.getKey().toString());
-            int quantity = Integer.valueOf(entry.getValue().toString());
+            int quantity = Integer.parseInt(entry.getValue().toString());
 
             Product product = productRepository.findById(productId).orElse(null);
-            if (product == null) {
+            if (product == null || product.getQuantity() < quantity) {
                 redis.opsForHash().delete(key, entry.getKey());
                 return null;
             }
