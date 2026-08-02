@@ -102,7 +102,11 @@ public class CartService extends BaseService implements CartServiceInterface {
 
     @Override
     public void removeItem(Long userId, Long productId) {
-
+        String key = cartKey(userId);
+        Long deleted = redis.opsForHash().delete(key, productId.toString());
+        if (deleted == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sản phẩm không có trong giỏ hàng!");
+        }
     }
 
     @Override
