@@ -7,11 +7,15 @@ import mst.local.mstsoftware.modules.order.entities.OrderItem;
 import mst.local.mstsoftware.modules.order.enums.OrderStatus;
 import mst.local.mstsoftware.modules.order.mappers.OrderMapper;
 import mst.local.mstsoftware.modules.order.repositories.OrderRepository;
-import mst.local.mstsoftware.modules.order.requests.CreateOrderRequest;
+import mst.local.mstsoftware.modules.order.requests.CartItemResource;
+import mst.local.mstsoftware.modules.order.requests.CartResource;
+import mst.local.mstsoftware.modules.order.requests.CheckoutRequest;
 import mst.local.mstsoftware.modules.order.resources.OrderResource;
+import mst.local.mstsoftware.modules.order.services.interfaces.CartServiceInterface;
 import mst.local.mstsoftware.modules.order.services.interfaces.OrderServiceInterface;
 import mst.local.mstsoftware.modules.product.entities.Product;
 import mst.local.mstsoftware.modules.product.repositories.ProductRepository;
+import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.services.impl.BaseService;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -29,37 +34,56 @@ public class OrderService extends BaseService implements OrderServiceInterface {
     private final OrderMapper orderMapper;
     private final ProductRepository productRepository;
 
+    private final CartServiceInterface cartService;
+
     @Override
     @Transactional
-    public OrderResource store(Long userId, CreateOrderRequest request) {
-        var user = findOrThrow(userRepository.findById(userId), "Người dùng không tồn tại trong hệ thống!");
-        List<OrderItem> orderItems = request.items().stream().map(item -> {
-            Product product = findOrThrow(productRepository.findById(item.productId()), "Không tìm thấy sản phẩm có id: " + item.productId());
-            if (product.getQuantity() < item.quantity()) {
-                throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!");
-            }
+    public OrderResource checkout(Long userId, CheckoutRequest request) {
+        CartResource cart = cartService.getCart(userId);
+        User user = findOrThrow(userRepository.findById(userId), "Người dùng không tồn tại!");
+        if (cart.items().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Giỏ hàng trống!");
+        }
+        List<CartItemResource> selectedItems = cart.items().stream()
+                .filter(item -> request.productIds().contains(item.productId()))
+                .toList();
 
-            product.setQuantity(product.getQuantity() - item.quantity());
-            productRepository.save(product);
-
-            return OrderItem.builder()
-                    .product(product)
-                    .quantity(item.quantity())
-                    .unitPrice(product.getPrice())
-                    .build();
-        }).toList();
-        BigDecimal total = orderItems.stream()
-                .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (selectedItems.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không tìm thấy sản phẩm đã chọn trong giỏ hàng!");
+        }
 
         Order order = Order.builder()
                 .user(user)
                 .status(OrderStatus.PENDING)
-                .totalPrice(total)
                 .note(request.note())
-                .items(orderItems)
+                .items(new ArrayList<>())
                 .build();
+
+        for (var cartItem : selectedItems) {
+            Product product = findOrThrow(productRepository.findById(cartItem.productId()), "Không tìm thấy sản phẩm ID: " + cartItem.productId());
+            if (product.getQuantity() < cartItem.quantity()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Sản phẩm " + product.getTitle() + " không đủ số lượng!");
+            }
+            product.setQuantity(product.getQuantity() - cartItem.quantity());
+            productRepository.save(product);
+
+            OrderItem item = OrderItem.builder()
+                    .order(order)
+                    .product(product)
+                    .quantity(cartItem.quantity())
+                    .unitPrice(product.getPrice())
+                    .build();
+
+            order.getItems().add(item);
+        }
+
+        BigDecimal total = order.getItems().stream()
+                .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setTotalPrice(total);
+        request.productIds().forEach(productId -> cartService.removeItem(user.getId(), productId));
         return orderMapper.toResource(orderRepository.save(order));
     }
 }

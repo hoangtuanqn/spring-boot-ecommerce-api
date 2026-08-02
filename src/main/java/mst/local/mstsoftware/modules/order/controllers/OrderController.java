@@ -3,7 +3,7 @@ package mst.local.mstsoftware.modules.order.controllers;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.controllers.BaseController;
-import mst.local.mstsoftware.modules.order.requests.CreateOrderRequest;
+import mst.local.mstsoftware.modules.order.requests.CheckoutRequest;
 import mst.local.mstsoftware.modules.order.resources.OrderResource;
 import mst.local.mstsoftware.modules.order.services.interfaces.OrderServiceInterface;
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController extends BaseController {
     private final OrderServiceInterface orderService;
 
-    @PostMapping
-    public ResponseEntity<ApiResource<OrderResource>> store(@Valid @RequestBody CreateOrderRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return created(orderService.store(userDetails.getId(), request), "Mua sản phẩm thành công!");
+    @PostMapping("/checkout")
+    public ResponseEntity<ApiResource<OrderResource>> checkout(@Valid @RequestBody CheckoutRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return created(orderService.checkout(userDetails.getId(), request), "Mua sản phẩm thành công!");
     }
 }
