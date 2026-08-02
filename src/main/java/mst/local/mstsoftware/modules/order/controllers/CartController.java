@@ -28,4 +28,9 @@ public class CartController extends BaseController {
         return ok(cartService.addItem(userDetails.getId(), request), "Thêm vào giỏ hàng thành công!");
     }
 
+    @DeleteMapping("/items/{productId}")
+    public ResponseEntity<ApiResource<Void>> removeItem(@PathVariable Long productId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        cartService.removeItem(userDetails.getId(), productId);
+        return ok(null, "Xoá sản phẩm khỏi giỏ hàng thành công!");
+    }
 }
