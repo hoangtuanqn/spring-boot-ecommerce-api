@@ -2,9 +2,11 @@ package mst.local.mstsoftware.modules.order.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.modules.order.requests.AddCartItemRequest;
 import mst.local.mstsoftware.modules.order.requests.CartResource;
+import mst.local.mstsoftware.modules.order.requests.UpdateCartItemRequest;
 import mst.local.mstsoftware.modules.order.services.interfaces.CartServiceInterface;
 import mst.local.mstsoftware.modules.user.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 @RequestMapping("/api/v1/cart")
 public class CartController extends BaseController {
     private final CartServiceInterface cartService;
@@ -39,5 +42,15 @@ public class CartController extends BaseController {
     public ResponseEntity<ApiResource<Void>> removeItemMany(@Valid @RequestBody BatchDeleteRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
         cartService.removeItemMany(userDetails.getId(), request.ids());
         return ok(null, "Xoá sản phẩm khỏi giỏ hàng thành công!");
+    }
+
+    @PatchMapping("/items/{productId}")
+    public ResponseEntity<ApiResource<CartResource>> updateItem(
+            @PathVariable Long productId,
+            @Valid @RequestBody UpdateCartItemRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        log.info("vô đây rồi");
+        return ok(cartService.updateItem(userDetails.getId(), productId, request), "Cập nhật giỏ hàng thành công!");
     }
 }
