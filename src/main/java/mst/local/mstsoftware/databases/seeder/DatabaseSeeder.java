@@ -63,7 +63,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             Product product = Product.builder()
                     .title("Iphone 17")
                     .description("Iphone 17 hàng chính hãng!")
-                    .price(BigDecimal.valueOf(50000000))
+                    .price(BigDecimal.valueOf(100000))
                     .quantity(100)
                     .category(category)
                     .build();
