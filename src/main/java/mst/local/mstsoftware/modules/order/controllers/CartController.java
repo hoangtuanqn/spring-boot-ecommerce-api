@@ -6,6 +6,7 @@ import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.modules.order.requests.AddCartItemRequest;
 import mst.local.mstsoftware.modules.order.requests.CartResource;
 import mst.local.mstsoftware.modules.order.services.interfaces.CartServiceInterface;
+import mst.local.mstsoftware.modules.user.requests.UserCatagoue.BatchDeleteRequest;
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,12 @@ public class CartController extends BaseController {
     @DeleteMapping("/items/{productId}")
     public ResponseEntity<ApiResource<Void>> removeItem(@PathVariable Long productId, @AuthenticationPrincipal CustomUserDetails userDetails) {
         cartService.removeItem(userDetails.getId(), productId);
+        return ok(null, "Xoá sản phẩm khỏi giỏ hàng thành công!");
+    }
+
+    @DeleteMapping("/items/batch-delete")
+    public ResponseEntity<ApiResource<Void>> removeItemMany(@Valid @RequestBody BatchDeleteRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        cartService.removeItemMany(userDetails.getId(), request.ids());
         return ok(null, "Xoá sản phẩm khỏi giỏ hàng thành công!");
     }
 }

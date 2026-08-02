@@ -4,6 +4,8 @@ import mst.local.mstsoftware.modules.order.requests.AddCartItemRequest;
 import mst.local.mstsoftware.modules.order.requests.CartResource;
 import mst.local.mstsoftware.modules.order.requests.UpdateCartItemRequest;
 
+import java.util.List;
+
 public interface CartServiceInterface {
     CartResource getCart(Long userId);
 
@@ -13,5 +15,5 @@ public interface CartServiceInterface {
 
     void removeItem(Long userId, Long productId);
 
-    void clearCart(Long userId);
+    void removeItemMany(Long userId, List<Long> productIds);
 }

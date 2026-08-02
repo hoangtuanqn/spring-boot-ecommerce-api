@@ -88,7 +88,7 @@ public class CartService extends BaseService implements CartServiceInterface {
 
         if (newQty > product.getQuantity()) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!");
+                    HttpStatus.BAD_REQUEST, "Sản phẩm " + product.getTitle() + " không đủ số lượng!. Hiện tại còn lại " + (product.getQuantity() - currentQty) + " sản phẩm!");
         }
         redis.opsForHash().put(key, field, String.valueOf(newQty));
         redis.expire(key, CART_TTL_DAYS, TimeUnit.DAYS);
@@ -110,9 +110,13 @@ public class CartService extends BaseService implements CartServiceInterface {
     }
 
     @Override
-    public void clearCart(Long userId) {
-        redis.delete(cartKey(userId));
+    public void removeItemMany(Long userId, List<Long> productIds) {
+        String key = cartKey(userId);
+        productIds.stream().forEach(product -> {
+            redis.opsForHash().delete(key, product.toString());
+        });
     }
+
 
     private String cartKey(Long userId) {
         return CART_PREFIX + userId;
