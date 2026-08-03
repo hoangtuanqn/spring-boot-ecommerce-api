@@ -61,7 +61,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
         try {
             String jti = jwtService.extractJti(token);
-            if (blacklistService.isRevoked(jti)) {
+            if (Boolean.TRUE.equals(blacklistService.isRevoked(jti))) {
                 writeErrorResponse(response, "Token của bạn không hợp lệ.");
                 return;
             }
@@ -81,12 +81,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException e) {
-            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token");
+            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token!");
             writeErrorResponse(response, message);
             return;
 
         } catch (Exception e) {
-            writeErrorResponse(response, "Lỗi xác thực token");
+            writeErrorResponse(response, "Lỗi xác thực token!");
             return;
         }
         filterChain.doFilter(request, response);

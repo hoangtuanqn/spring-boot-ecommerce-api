@@ -20,6 +20,11 @@ public class User {
     @Column(name = "user_catalogues_id")
     private Long userCataloguesId;
 
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "role_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_role_id"))
+    private Role role;
+
     private String name;
     private String email;
     private String password;

@@ -12,6 +12,7 @@ import mst.local.mstsoftware.modules.user.requests.UserCatagoue.BatchDeleteReque
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,21 +43,25 @@ public class CategoryController extends BaseController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResource<CategoryResource>> store(@Valid @RequestBody CreateCategoryRequest request) {
         return created(categoryService.store(request), "Thêm danh mục mới thành công!");
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResource<CategoryResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateCategoryRequest request) {
         return ok(categoryService.update(id, request), "Cập nhật danh mục thành công!");
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResource<CategoryResource>> destroy(@PathVariable Long id) {
         return ok(categoryService.destroy(id), "Xóa danh mục thành công!");
     }
 
     @DeleteMapping("/batch-delete")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
         categoryService.deleteMultiple(request.ids());
         return ok(null, "Xóa tất cả category thành công!");
