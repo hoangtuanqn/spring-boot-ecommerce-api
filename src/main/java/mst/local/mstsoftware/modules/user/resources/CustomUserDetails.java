@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.user.resources;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,6 +23,7 @@ public class CustomUserDetails implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
+    @NullMarked
     public String getUsername() {
         return email; // tùy hệ thống mà trả về cho đúng
     }
