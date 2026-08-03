@@ -92,8 +92,9 @@ public class OrderService extends BaseService implements OrderServiceInterface {
                 .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalPrice(total);
+        var result = orderRepository.save(order);
         request.productIds().forEach(productId -> cartService.removeItem(user.getId(), productId));
-        return orderMapper.toResource(orderRepository.save(order));
+        return orderMapper.toResource(result);
     }
 
     @Override
