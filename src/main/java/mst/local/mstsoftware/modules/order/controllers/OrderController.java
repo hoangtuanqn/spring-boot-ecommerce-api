@@ -40,4 +40,9 @@ public class OrderController extends BaseController {
     public ResponseEntity<ApiResource<OrderResource>> checkout(@Valid @RequestBody CheckoutRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
         return created(orderService.checkout(userDetails.getId(), request), "Mua sản phẩm thành công!");
     }
+
+    @GetMapping("/code/{code}")
+    public ResponseEntity<ApiResource<OrderResource>> showByCode(@PathVariable String code, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ok(orderService.findByCode(userDetails.getId(), code), "Lấy chi tiết đơn hàng thành công!");
+    }
 }

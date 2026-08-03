@@ -14,4 +14,6 @@ public interface OrderServiceInterface {
     public OrderResource cancel(Long userId, Long orderId, CancelOrderRequest note);
 
     public Page<OrderSummaryResource> paginate(Long userId, Map<String, String[]> parameters);
+
+    public OrderResource findByCode(Long userId, String code);
 }

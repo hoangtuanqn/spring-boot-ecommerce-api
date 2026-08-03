@@ -118,4 +118,11 @@ public class OrderService extends BaseService implements OrderServiceInterface {
         Pageable pageable = specBuilder.buildPageable(parameters);
         return orderRepository.findAll(specs, pageable).map(orderMapper::toSummary);
     }
+
+    @Override
+    public OrderResource findByCode(Long userId, String code) {
+        Order order = findOrThrow(orderRepository.findByCodeAndUserId(code, userId), "Đơn hàng này của bạn không tồn tại!");
+        return orderMapper.toResource(order);
+    }
+
 }
