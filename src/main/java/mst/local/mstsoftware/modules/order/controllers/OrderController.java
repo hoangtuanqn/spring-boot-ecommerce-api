@@ -31,9 +31,9 @@ public class OrderController extends BaseController {
         return ok(page, "Lấy lịch sử đơn hàng thành công!");
     }
 
-    @PatchMapping("/{id}/cancel")
-    public ResponseEntity<ApiResource<OrderResource>> cancel(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CancelOrderRequest request) {
-        return ok(orderService.cancel(userDetails.getId(), id, request), "Huỷ đơn hàng thành công!");
+    @PatchMapping("/{code}/cancel")
+    public ResponseEntity<ApiResource<OrderResource>> cancel(@PathVariable String code, @AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody CancelOrderRequest request) {
+        return ok(orderService.cancel(userDetails.getId(), code, request), "Huỷ đơn hàng thành công!");
     }
 
     @PostMapping("/checkout")
