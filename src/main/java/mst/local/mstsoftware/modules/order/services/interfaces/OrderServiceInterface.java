@@ -11,7 +11,9 @@ import java.util.Map;
 public interface OrderServiceInterface {
     public OrderResource checkout(Long userId, CheckoutRequest request);
 
-    public OrderResource cancel(Long userId, Long orderId, CancelOrderRequest note);
+    public OrderResource cancel(Long userId, String code, CancelOrderRequest note);
 
     public Page<OrderSummaryResource> paginate(Long userId, Map<String, String[]> parameters);
+
+    public OrderResource findByCode(Long userId, String code);
 }

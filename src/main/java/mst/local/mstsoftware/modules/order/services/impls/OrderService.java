@@ -98,8 +98,8 @@ public class OrderService extends BaseService implements OrderServiceInterface {
 
     @Override
     @Transactional
-    public OrderResource cancel(Long userId, Long orderId, CancelOrderRequest note) {
-        Order order = findOrThrow(orderRepository.findByIdAndUserId(orderId, userId), "Đơn hàng này của bạn không tồn tại!");
+    public OrderResource cancel(Long userId, String code, CancelOrderRequest note) {
+        Order order = findOrThrow(orderRepository.findByCodeAndUserId(code, userId), "Đơn hàng này của bạn không tồn tại!");
         if (order.getStatus() != OrderStatus.PENDING) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Chỉ có thể huỷ đơn hàng ở trạng thái chờ xử lý!");
         }
@@ -118,4 +118,11 @@ public class OrderService extends BaseService implements OrderServiceInterface {
         Pageable pageable = specBuilder.buildPageable(parameters);
         return orderRepository.findAll(specs, pageable).map(orderMapper::toSummary);
     }
+
+    @Override
+    public OrderResource findByCode(Long userId, String code) {
+        Order order = findOrThrow(orderRepository.findByCodeAndUserId(code, userId), "Đơn hàng này của bạn không tồn tại!");
+        return orderMapper.toResource(order);
+    }
+
 }
