@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.order.services.impls;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
+import mst.local.mstsoftware.helpers.RandomHelper;
 import mst.local.mstsoftware.modules.order.entities.Order;
 import mst.local.mstsoftware.modules.order.entities.OrderItem;
 import mst.local.mstsoftware.modules.order.enums.OrderStatus;
@@ -61,6 +62,7 @@ public class OrderService extends BaseService implements OrderServiceInterface {
 
         Order order = Order.builder()
                 .user(user)
+                .code(RandomHelper.generateTransactionId())
                 .status(OrderStatus.PENDING)
                 .note(request.note())
                 .items(new ArrayList<>())

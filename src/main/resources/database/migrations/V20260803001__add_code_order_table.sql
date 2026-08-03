@@ -1,0 +1,2 @@
+ALTER TABLE orders
+    ADD code VARCHAR(20) NOT NULL UNIQUE AFTER user_id;
