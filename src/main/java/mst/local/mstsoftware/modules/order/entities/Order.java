@@ -27,6 +27,9 @@ public class Order {
             foreignKey = @ForeignKey(name = "fk_order_user"))
     private User user;
 
+    @Column(unique = true, nullable = false, length = 20)
+    private String code;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.PENDING;
