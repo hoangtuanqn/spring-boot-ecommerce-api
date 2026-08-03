@@ -8,16 +8,19 @@ import mst.local.mstsoftware.modules.product.entities.Category;
 import mst.local.mstsoftware.modules.product.entities.Product;
 import mst.local.mstsoftware.modules.product.repositories.CategoryRepository;
 import mst.local.mstsoftware.modules.product.repositories.ProductRepository;
+import mst.local.mstsoftware.modules.user.entities.Role;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserCatalogue;
+import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.repositories.RoleRepository;
 import mst.local.mstsoftware.modules.user.repositories.UserCatalogueRepository;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @Component
@@ -31,11 +34,18 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final UserCatalogueRepository userCatalogueRepository;
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        if (isRoleTableEmpty()) {
+            Role adminRole = Role.builder().name(RoleType.ADMIN).build();
+            Role userRole = Role.builder().name(RoleType.USER).build();
+            roleRepository.saveAll(List.of(adminRole, userRole));
+        }
         if (isUserTableEmpty() || isUserCatalogueTableEmpty()) {
+
             UserCatalogue userCatalogue = UserCatalogue.builder()
                     .name("Admin")
                     .publish(1)
@@ -43,7 +53,11 @@ public class DatabaseSeeder implements CommandLineRunner {
             userCatalogue = userCatalogueRepository.save(userCatalogue);
 
             String password = passwordEncoder.encode("password");
+            Role adminRole = roleRepository.findByName(RoleType.ADMIN)
+                    .orElseGet(() -> roleRepository.save(Role.builder().name(RoleType.ADMIN).build()));
+
             User user = User.builder()
+                    .role(adminRole)
                     .name("Phạm Hoàng Tuấn")
                     .email("phamhoangtuanqn@gmail.com")
                     .password(password)
@@ -69,6 +83,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                     .build();
             productRepository.save(product);
         }
+
+
     }
 
     private boolean isUserTableEmpty() {
@@ -83,6 +99,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private boolean isCategoryAndProductTableEmpty() {
         return categoryRepository.count() == 0 && productRepository.count() == 0;
+    }
+
+    private boolean isRoleTableEmpty() {
+        return roleRepository.count() == 0;
     }
 
 }
