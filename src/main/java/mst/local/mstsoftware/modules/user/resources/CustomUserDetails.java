@@ -34,6 +34,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
+    @NullMarked
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
