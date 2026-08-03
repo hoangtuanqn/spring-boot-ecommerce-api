@@ -69,7 +69,7 @@ public class OrderService extends BaseService implements OrderServiceInterface {
                 .build();
 
         for (var cartItem : selectedItems) {
-            Product product = findOrThrow(productRepository.findById(cartItem.productId()), "Không tìm thấy sản phẩm ID: " + cartItem.productId());
+            Product product = findOrThrow(productRepository.findByIdForUpdate(cartItem.productId()), "Không tìm thấy sản phẩm ID: " + cartItem.productId());
             if (product.getQuantity() < cartItem.quantity()) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
