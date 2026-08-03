@@ -11,6 +11,7 @@ import mst.local.mstsoftware.resources.FieldErrorResource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Configuration
+@EnableMethodSecurity // phần quyền dựa trên method (còn default là phân quyền theo url)
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
