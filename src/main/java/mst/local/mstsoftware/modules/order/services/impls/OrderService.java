@@ -69,7 +69,7 @@ public class OrderService extends BaseService implements OrderServiceInterface {
                 .build();
 
         for (var cartItem : selectedItems) {
-            Product product = findOrThrow(productRepository.findById(cartItem.productId()), "Không tìm thấy sản phẩm ID: " + cartItem.productId());
+            Product product = findOrThrow(productRepository.findByIdForUpdate(cartItem.productId()), "Không tìm thấy sản phẩm ID: " + cartItem.productId());
             if (product.getQuantity() < cartItem.quantity()) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
@@ -92,8 +92,9 @@ public class OrderService extends BaseService implements OrderServiceInterface {
                 .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalPrice(total);
+        var result = orderRepository.save(order);
         request.productIds().forEach(productId -> cartService.removeItem(user.getId(), productId));
-        return orderMapper.toResource(orderRepository.save(order));
+        return orderMapper.toResource(result);
     }
 
     @Override
