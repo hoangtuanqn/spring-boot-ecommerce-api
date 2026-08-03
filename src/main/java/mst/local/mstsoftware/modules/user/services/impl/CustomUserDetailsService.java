@@ -3,7 +3,6 @@ package mst.local.mstsoftware.modules.user.services.impl;
 import lombok.RequiredArgsConstructor;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
-
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

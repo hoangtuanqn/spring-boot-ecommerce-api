@@ -81,12 +81,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException e) {
-            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token 22");
+            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token!");
             writeErrorResponse(response, message);
             return;
 
         } catch (Exception e) {
-            writeErrorResponse(response, "Lỗi xác thực token 11");
+            writeErrorResponse(response, "Lỗi xác thực token!");
             return;
         }
         filterChain.doFilter(request, response);
