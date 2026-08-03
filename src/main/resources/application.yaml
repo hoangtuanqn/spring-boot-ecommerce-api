@@ -25,8 +25,13 @@ spring:
     password: ${MYSQL_ROOT_PASSWORD:changeme}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
+    #    Hiển thị SQL ra console
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
     show-sql: true
   flyway:
     enabled: true
@@ -46,8 +51,13 @@ spring:
 
 logging:
   level:
-    org.flywaydb: DEBUG
-
+    org:
+      flywaydb: DEBUG
+      hibernate:
+        stat: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
 jwt:
   secret: ${JWT_SECRET:a1M8O206XTw5ITl6NzReN3BKTTNVaWY1L1dnfWFPQjIjaysvV2F3Tm5fZA==}
   expiration: 900000
