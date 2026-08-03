@@ -12,6 +12,7 @@ import mst.local.mstsoftware.modules.user.requests.UserCatagoue.BatchDeleteReque
 import mst.local.mstsoftware.resources.ApiResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ public class ProductController extends BaseController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResource<ProductResource>> store(@Valid @RequestBody CreateProductRequest request) {
         return created(productService.store(request), "Thêm sản phẩm mới thành công!");
     }
