@@ -19,4 +19,10 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoleType name = RoleType.USER;
+
+    private String description;
+
+    @Column(name = "is_system", nullable = false)
+    @Builder.Default
+    private boolean isSystem = false;
 }
