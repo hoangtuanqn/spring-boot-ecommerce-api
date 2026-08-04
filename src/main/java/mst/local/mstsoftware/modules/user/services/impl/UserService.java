@@ -3,11 +3,14 @@ package mst.local.mstsoftware.modules.user.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.config.AuthConfig;
+import mst.local.mstsoftware.modules.user.entities.Role;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
 import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.repositories.RoleRepository;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
+import mst.local.mstsoftware.modules.user.requests.RegisterRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
 import mst.local.mstsoftware.modules.user.resources.UserResource;
 import mst.local.mstsoftware.modules.user.services.interfaces.RefreshTokenServiceInterface.IssuedToken;
@@ -34,6 +37,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     private final RefreshTokenService refreshTokenService;
     private final UserSessionCache userSessionCache;
     private final AuthConfig authConfig;
+    private final RoleRepository roleRepository;
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
@@ -65,6 +69,50 @@ public class UserService extends BaseService implements UserServiceInterface {
                 .build();
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
+
+    @Override
+    public AuthResult register(RegisterRequest request) {
+        String email = request.email();
+        String phone = request.phone();
+        if (userRepository.existsByEmail(email)) {
+            throw new BadCredentialsException("Email này đã tồn tại trong hệ thống!");
+        }
+        if (userRepository.existsByPhone(phone)) {
+            throw new BadCredentialsException("Số điện thoại này đã tồn tại trong hệ thống!");
+        }
+        if (!request.password().equals(request.confirmPassword())) {
+            throw new BadCredentialsException("Nhập lại mật khẩu không chính xác!");
+        }
+        String password = passwordEncoder.encode(request.password());
+        Role userRole = findOrThrow(roleRepository.findByName(RoleType.USER), "Role " + RoleType.USER + " không tồn tại trong hệ thống!");
+        User user = userRepository.save(
+                User.builder()
+                        .name(request.name())
+                        .email(email)
+                        .password(password)
+                        .phone(phone)
+                        .build()
+        );
+        UserRole normalUserRole = UserRole.builder()
+                .user(user)
+                .role(userRole)
+                .expiresAt(null)
+                .build();
+        String accessToken = jwtService.generateToken(user.getId());
+
+        Duration ttl = Duration.ofMillis(authConfig.getExpirationTime());
+        userSessionCache.set(user.getId(), user.getEmail(), Set.of(RoleType.USER), ttl);
+
+        IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
+        UserResource userResource = UserResource.builder()
+                .id(user.getId())
+                .email(email)
+                .name(user.getName())
+                .phone(user.getPhone())
+                .build();
+        return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
+    }
+
 
     @Override
     public Optional<User> findById(Long userId) {

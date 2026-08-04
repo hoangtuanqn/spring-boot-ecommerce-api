@@ -8,8 +8,10 @@ import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.filters.JwtAuthFilter;
 import mst.local.mstsoftware.helpers.CookieUtils;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
+import mst.local.mstsoftware.modules.user.requests.RegisterRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
 import mst.local.mstsoftware.modules.user.resources.LoginResource;
+import mst.local.mstsoftware.modules.user.resources.RegisterResource;
 import mst.local.mstsoftware.modules.user.services.interfaces.RefreshTokenServiceInterface;
 import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
@@ -48,6 +50,18 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(ApiResource.success(body, "Đăng nhập tài khoản thành công!"));
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResource<RegisterResource>> login(@Valid @RequestBody RegisterRequest request) {
+        AuthResult auth = userService.register(request);
+        ResponseCookie refreshCookie = CookieUtils.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
+
+        RegisterResource body = new RegisterResource(auth.accessToken(), auth.user());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(ApiResource.success(body, "Đăng ký tài khoản thành công!"));
+    }
+
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResource<String>> logout(HttpServletRequest request, @CookieValue(name = "refresh_token", required = false) String refreshTokenRaw) {
