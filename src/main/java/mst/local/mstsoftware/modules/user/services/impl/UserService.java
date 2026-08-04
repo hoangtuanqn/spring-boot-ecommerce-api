@@ -1,6 +1,7 @@
 package mst.local.mstsoftware.modules.user.services.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService extends BaseService implements UserServiceInterface {
 
     private final PasswordEncoder passwordEncoder;
@@ -31,7 +33,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Override
     public AuthResult authenticate(LoginRequest request) {
         String email = request.email();
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailWithRoles(email)
                 .orElseThrow(() -> new BadCredentialsException("Email hoặc mật khẩu không chính xác!"));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
@@ -42,6 +44,10 @@ public class UserService extends BaseService implements UserServiceInterface {
                 .filter(UserRole::isActive)
                 .map(ur -> ur.getRole().getName().toString())
                 .collect(Collectors.toList());
+
+        for (var role : roles) {
+            log.debug("role: " + role);
+        }
 
         String accessToken = jwtService.generateToken(user.getId(), email, roles);
         IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
