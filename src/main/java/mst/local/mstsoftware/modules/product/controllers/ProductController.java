@@ -36,25 +36,25 @@ public class ProductController extends BaseController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('PRODUCT:CREATE')")
     public ResponseEntity<ApiResource<ProductResource>> store(@Valid @RequestBody CreateProductRequest request) {
         return created(productService.store(request), "Thêm sản phẩm mới thành công!");
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('PRODUCT:CREATE')")
     public ResponseEntity<ApiResource<ProductResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
         return ok(productService.update(id, request), "Cập nhật sản phẩm thành công!");
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('PRODUCT:DELETE')")
     public ResponseEntity<ApiResource<ProductResource>> destroy(@PathVariable Long id) {
         return ok(productService.destroy(id), "Xóa sản phẩm thành công!");
     }
 
     @DeleteMapping("/batch-delete")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('PRODUCT:DELETE')")
     public ResponseEntity<ApiResource<Void>> deleteMany(@Valid @RequestBody BatchDeleteRequest request) {
         productService.deleteMultiple(request.ids());
         return ok(null, "Xóa tất cả sản phâm thành công!");
