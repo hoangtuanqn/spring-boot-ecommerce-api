@@ -92,6 +92,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
 
                 // Build authentication — không cần UserDetails, dùng email làm principal
+//                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(email, null, authorities);
 
