@@ -2,6 +2,7 @@ package mst.local.mstsoftware.modules.user.services.impl;
 
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.modules.user.entities.User;
+import mst.local.mstsoftware.modules.user.entities.UserRole;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
@@ -14,7 +15,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +37,13 @@ public class UserService extends BaseService implements UserServiceInterface {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
-        String accessToken = jwtService.generateToken(user.getId(), email);
+
+        List<String> roles = user.getUserRoles().stream()
+                .filter(UserRole::isActive)
+                .map(ur -> ur.getRole().getName().toString())
+                .collect(Collectors.toList());
+
+        String accessToken = jwtService.generateToken(user.getId(), email, roles);
         IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
         UserResource userResource = UserResource.builder()
                 .id(user.getId())
