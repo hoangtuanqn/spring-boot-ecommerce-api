@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
                 WHERE u.email = :email
             """)
     Optional<User> findByEmailWithRoles(@Param("email") String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhone(String phone);
 }
