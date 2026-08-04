@@ -22,4 +22,8 @@ public class Permission {
     private String action;
 
     private String description;
+
+    public String toAuthority() {
+        return resource + ":" + action;
+    }
 }
