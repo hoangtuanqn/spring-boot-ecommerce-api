@@ -12,21 +12,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.services.impl.PermissionCacheService;
 import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.resources.ErrorResource;
 import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @Slf4j // cài sẵn logger
@@ -36,6 +42,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final BlacklistServiceInterface blacklistService;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
+    private final PermissionCacheService permissionCacheService;
+
     public static final String TOKEN_ATTRIBUTE = "jwt_token";
 
     private static final Map<Class<? extends JwtException>, String> JWT_ERRORS_MESSAGES = Map.of(
@@ -67,26 +75,48 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
             request.setAttribute(TOKEN_ATTRIBUTE, token);
             String email = jwtService.extractEmail(token);
+            List<RoleType> roles = jwtService.extractRoles(token);
+
+
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                if (jwtService.isTokenValid(token, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
+                // Load permissions từ Redis cache theo roles
+                Set<String> permissions = permissionCacheService.getPermissionsByRoles(roles);
 
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // truy xuất
-                    // metadata
-                    // request
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                // Build authorities
+                Set<GrantedAuthority> authorities = new HashSet<>();
+                roles.forEach(r ->
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + r))
+                );
+                permissions.forEach(p ->
+                        authorities.add(new SimpleGrantedAuthority(p))
+                );
 
-                }
+                // Build authentication — không cần UserDetails, dùng email làm principal
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+
+//                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+//                if (jwtService.isTokenValid(token, userDetails)) {
+//                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+//                            userDetails, null, userDetails.getAuthorities());
+//
+//                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // truy xuất
+//                    // metadata
+//                    // request
+//                    SecurityContextHolder.getContext().setAuthentication(authToken);
+//
+//                }
             }
         } catch (JwtException e) {
-            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token!");
+            String message = JWT_ERRORS_MESSAGES.getOrDefault(e.getClass(), "Lỗi xác thực token 11!");
             writeErrorResponse(response, message);
             return;
 
         } catch (Exception e) {
-            writeErrorResponse(response, "Lỗi xác thực token!");
+            writeErrorResponse(response, "Lỗi xác thực token 12!");
             return;
         }
         filterChain.doFilter(request, response);

@@ -4,15 +4,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import mst.local.mstsoftware.config.AuthConfig;
+import mst.local.mstsoftware.modules.user.enums.RoleType;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -29,13 +27,14 @@ public class JwtService implements JwtServiceInterface {
 
     // tạo ra jwt
     @Override
-    public String generateToken(Long userId, String email) {
+    public String generateToken(Long userId, String email, List<String> roles) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", userId)
+                .claim("roles", roles)
                 .claim("jti", UUID.randomUUID().toString())
                 .issuer(issuer)
                 .issuedAt(now)
@@ -82,6 +81,17 @@ public class JwtService implements JwtServiceInterface {
     }
 
     @Override
+    public List<RoleType> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+
+        List<String> roleNames = claims.get("roles", List.class);
+        if (roleNames == null || roleNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return roleNames.stream().map(RoleType::valueOf).toList();
+    }
+
+    @Override
     public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) this.key)
@@ -95,5 +105,6 @@ public class JwtService implements JwtServiceInterface {
         Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
 
 }
