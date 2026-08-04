@@ -2,8 +2,10 @@ package mst.local.mstsoftware.modules.user.services.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
+import mst.local.mstsoftware.modules.user.enums.RoleType;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
@@ -16,8 +18,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.Duration;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +32,8 @@ public class UserService extends BaseService implements UserServiceInterface {
     private final JwtServiceInterface jwtService;
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
+    private final UserSessionCache userSessionCache;
+    private final AuthConfig authConfig;
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
@@ -40,16 +45,17 @@ public class UserService extends BaseService implements UserServiceInterface {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
 
-        List<String> roles = user.getUserRoles().stream()
+        Set<RoleType> roles = user.getUserRoles().stream()
                 .filter(UserRole::isActive)
-                .map(ur -> ur.getRole().getName().toString())
-                .collect(Collectors.toList());
+                .map(ur -> ur.getRole().getName())
+                .collect(Collectors.toSet());
 
-        for (var role : roles) {
-            log.debug("role: " + role);
-        }
 
-        String accessToken = jwtService.generateToken(user.getId(), email, roles);
+        String accessToken = jwtService.generateToken(user.getId());
+
+        Duration ttl = Duration.ofMillis(authConfig.getExpirationTime());
+        userSessionCache.set(user.getId(), user.getEmail(), roles, ttl);
+
         IssuedToken refreshToken = refreshTokenService.issueRefreshToken(user.getId());
         UserResource userResource = UserResource.builder()
                 .id(user.getId())
@@ -71,8 +77,8 @@ public class UserService extends BaseService implements UserServiceInterface {
     }
 
     @Override
-    public UserResource getMe(String email) {
-        var user = findOrThrow(findByEmail(email), "Người dùng này không tồn tại!");
+    public UserResource getMe(Long userId) {
+        var user = findOrThrow(findById(userId), "Người dùng này không tồn tại!");
         return UserResource.builder()
                 .id(user.getId())
                 .email(user.getEmail())
