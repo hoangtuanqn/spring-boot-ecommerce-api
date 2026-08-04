@@ -13,7 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.modules.user.services.impl.PermissionCacheService;
+import mst.local.mstsoftware.modules.user.services.impl.UserSessionCache;
 import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.resources.ErrorResource;
 import mst.local.mstsoftware.services.interfaces.BlacklistServiceInterface;
@@ -33,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j // cài sẵn logger
@@ -43,6 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
     private final PermissionCacheService permissionCacheService;
+    private final UserSessionCache userSessionCache;
 
     public static final String TOKEN_ATTRIBUTE = "jwt_token";
 
@@ -74,27 +78,41 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
             request.setAttribute(TOKEN_ATTRIBUTE, token);
-            String email = jwtService.extractEmail(token);
-            List<RoleType> roles = jwtService.extractRoles(token);
+            Long userId = jwtService.extractSubject(token);
+//            List<RoleType> roles = jwtService.extractRoles(token);
 
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                Map<String, Object> session = userSessionCache.get(userId);
+
+                if (session == null) {
+                    // Session hết hạn hoặc bị evict → force logout
+                    writeErrorResponse(response, "Phiên đăng nhập đã hết hạn.");
+                    return;
+                }
+                String email = (String) session.get("email");
+                List<String> roles = (List<String>) session.get("roles");
+
                 // Load permissions từ Redis cache theo roles
-                Set<String> permissions = permissionCacheService.getPermissionsByRoles(roles);
+                Set<String> permissions = permissionCacheService.getPermissionsByRoles(
+                        roles.stream().map(RoleType::valueOf).collect(Collectors.toList())
+                );
 
                 // Build authorities
                 Set<GrantedAuthority> authorities = new HashSet<>();
-                roles.forEach(r ->
-                        authorities.add(new SimpleGrantedAuthority("ROLE_" + r))
-                );
-                permissions.forEach(p ->
-                        authorities.add(new SimpleGrantedAuthority(p))
-                );
+                roles.forEach(r -> authorities.add(new SimpleGrantedAuthority("ROLE_" + r)));
+                permissions.forEach(p -> authorities.add(new SimpleGrantedAuthority(p)));
 
-                // Build authentication — không cần UserDetails, dùng email làm principal
-//                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                // Build principal
+                CustomUserDetails userDetails = CustomUserDetails.builder()
+                        .id(userId)
+                        .email(email)
+                        .authorities(authorities)
+                        .build();
+
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);

@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -27,14 +27,14 @@ public class JwtService implements JwtServiceInterface {
 
     // tạo ra jwt
     @Override
-    public String generateToken(Long userId, String email, List<String> roles) {
+    public String generateToken(Long userId) {
         Date now = new Date();
         Date expiredAt = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .subject(email)
-                .claim("userId", userId)
-                .claim("roles", roles)
+                .subject(userId.toString())
+//                .claim("userId", userId)
+//                .claim("roles", roles)
                 .claim("jti", UUID.randomUUID().toString())
                 .issuer(issuer)
                 .issuedAt(now)
@@ -45,9 +45,9 @@ public class JwtService implements JwtServiceInterface {
     }
 
     @Override
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        String email = extractEmail(token);
-        return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, CustomUserDetails userDetails) {
+        Long userId = extractSubject(token);
+        return userId.equals(userDetails.getId()) && !isTokenExpired(token);
     }
 
     // check token còn hsd k
@@ -58,15 +58,20 @@ public class JwtService implements JwtServiceInterface {
     }
 
     @Override
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public Long extractSubject(String token) {
+        return Long.valueOf(extractClaim(token, Claims::getSubject));
     }
 
-    @Override
-    public Long extractUserId(String token) {
-        Claims claims = extractAllClaims(token);
-        return claims.get("userId", Long.class);
-    }
+//    @Override
+//    public String extractEmail(String token) {
+//        return extractClaim(token, Claims::getSubject);
+//    }
+//
+//    @Override
+//    public Long extractUserId(String token) {
+//        Claims claims = extractAllClaims(token);
+//        return claims.get("userId", Long.class);
+//    }
 
     @Override
     public String extractJti(String token) {

@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -36,8 +35,8 @@ public class UserController extends BaseController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResource<UserResource>> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        String email = userDetails.getUsername();
-        return ResponseEntity.ok(ApiResource.success(userService.getMe(email), "Lấy thông tin thành công!"));
+        Long userId = userDetails.getId();
+        return ResponseEntity.ok(ApiResource.success(userService.getMe(userId), "Lấy thông tin thành công!"));
     }
 
     @PostMapping("/refresh")
@@ -49,8 +48,8 @@ public class UserController extends BaseController {
         List<String> roles = user.getUserRoles().stream()
                 .filter(UserRole::isActive)
                 .map(ur -> ur.getRole().getName().toString())
-                .collect(Collectors.toList());
-        String newAccessToken = jwtService.generateToken(result.userId(), user.getEmail(), roles);
+                .toList();
+        String newAccessToken = jwtService.generateToken(result.userId());
 
         ResponseCookie cookie = CookieUtils.buildRefreshTokenCookie(result.newRefreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 

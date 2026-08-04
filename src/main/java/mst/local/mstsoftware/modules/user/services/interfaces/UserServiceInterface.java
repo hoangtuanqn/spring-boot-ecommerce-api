@@ -14,5 +14,5 @@ public interface UserServiceInterface {
 
     Optional<User> findByEmail(String email);
 
-    UserResource getMe(String email);
+    UserResource getMe(Long userId);
 }
