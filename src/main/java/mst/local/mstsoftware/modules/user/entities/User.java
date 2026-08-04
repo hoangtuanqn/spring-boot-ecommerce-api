@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,14 +22,21 @@ public class User {
     @Column(name = "user_catalogues_id")
     private Long userCataloguesId;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "role_id", nullable = false,
-            foreignKey = @ForeignKey(name = "fk_role_id"))
-    private Role role;
+//    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+//    @JoinColumn(name = "role_id", nullable = false,
+//            foreignKey = @ForeignKey(name = "fk_role_id"))
+//    private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<UserRole> userRoles = new HashSet<>();
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String email;
     private String password;
+
+    @Column(unique = true)
     private String phone;
     private String image;
     private String address;
