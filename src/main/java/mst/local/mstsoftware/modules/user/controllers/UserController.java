@@ -7,6 +7,7 @@ import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.helpers.CookieUtils;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
+import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.modules.user.resources.RefreshTokenResource;
 import mst.local.mstsoftware.modules.user.resources.UserResource;
 import mst.local.mstsoftware.modules.user.services.impl.RefreshTokenService;
@@ -17,7 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -35,7 +35,7 @@ public class UserController extends BaseController {
     private final AuthConfig authConfig;
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResource<UserResource>> me(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResource<UserResource>> me(@AuthenticationPrincipal CustomUserDetails userDetails) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(ApiResource.success(userService.getMe(email), "Lấy thông tin thành công!"));
     }
