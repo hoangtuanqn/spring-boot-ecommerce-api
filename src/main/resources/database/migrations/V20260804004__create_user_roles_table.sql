@@ -1,7 +1,7 @@
 CREATE TABLE user_roles (
-    user_id    BIGINT NOT NULL,
-    role_id    BIGINT NOT NULL,
-    granted_by BIGINT NULL,
+    user_id    BIGINT UNSIGNED NOT NULL,
+    role_id    BIGINT UNSIGNED NOT NULL,
+    granted_by BIGINT UNSIGNED NULL,
     granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP NULL,
     PRIMARY KEY (user_id, role_id),

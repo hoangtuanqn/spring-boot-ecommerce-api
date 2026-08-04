@@ -18,7 +18,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
                 LEFT JOIN FETCH r.permissions
                 WHERE r.name = :name
             """)
-    Optional<Role> findByNameWithPermissions(@Param("name") String name);
+    Optional<Role> findByNameWithPermissions(@Param("name") RoleType name);
 
     boolean existsByName(String name);
 }
