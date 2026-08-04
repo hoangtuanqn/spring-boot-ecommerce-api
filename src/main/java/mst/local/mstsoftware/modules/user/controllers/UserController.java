@@ -7,10 +7,12 @@ import mst.local.mstsoftware.controllers.BaseController;
 import mst.local.mstsoftware.helpers.CookieUtils;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
+import mst.local.mstsoftware.modules.user.enums.RoleType;
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.modules.user.resources.RefreshTokenResource;
 import mst.local.mstsoftware.modules.user.resources.UserResource;
 import mst.local.mstsoftware.modules.user.services.impl.RefreshTokenService;
+import mst.local.mstsoftware.modules.user.services.impl.UserSessionCache;
 import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
@@ -21,7 +23,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -31,6 +34,7 @@ public class UserController extends BaseController {
     private final UserServiceInterface userService;
     private final JwtServiceInterface jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final UserSessionCache userSessionCache;
     private final AuthConfig authConfig;
 
     @GetMapping("/me")
@@ -45,11 +49,13 @@ public class UserController extends BaseController {
         User user = userService.findById(result.userId())
                 .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
 
-        List<String> roles = user.getUserRoles().stream()
+        Set<RoleType> roles = user.getUserRoles().stream()
                 .filter(UserRole::isActive)
-                .map(ur -> ur.getRole().getName().toString())
-                .toList();
+                .map(ur -> ur.getRole().getName())
+                .collect(Collectors.toSet());
+
         String newAccessToken = jwtService.generateToken(result.userId());
+        userSessionCache.set(user.getId(), user.getEmail(), roles, Duration.ofMillis(authConfig.getExpirationTime()));
 
         ResponseCookie cookie = CookieUtils.buildRefreshTokenCookie(result.newRefreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 
