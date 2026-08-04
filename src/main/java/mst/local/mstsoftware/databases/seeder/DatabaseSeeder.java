@@ -177,7 +177,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         User editor = userRepository.save(
                 User.builder()
                         .name("Editor MST")
-                        .email("editor@mst.com")
+                        .email("editor@gmail.com")
                         .password(password)
                         .phone("0900000002")
                         .userCataloguesId(editorCatalogue.getId())
@@ -188,7 +188,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         User normalUser = userRepository.save(
                 User.builder()
                         .name("User MST")
-                        .email("user@mst.com")
+                        .email("user@gmail.com")
                         .password(password)
                         .phone("0900000003")
                         .userCataloguesId(userCatalogue.getId())
