@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import mst.local.mstsoftware.config.AuthConfig;
-import mst.local.mstsoftware.modules.user.enums.RoleType;
 import mst.local.mstsoftware.modules.user.resources.CustomUserDetails;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,6 @@ public class JwtService implements JwtServiceInterface {
 
         return Jwts.builder()
                 .subject(userId.toString())
-//                .claim("userId", userId)
-//                .claim("roles", roles)
                 .claim("jti", UUID.randomUUID().toString())
                 .issuer(issuer)
                 .issuedAt(now)
@@ -62,17 +59,6 @@ public class JwtService implements JwtServiceInterface {
         return Long.valueOf(extractClaim(token, Claims::getSubject));
     }
 
-//    @Override
-//    public String extractEmail(String token) {
-//        return extractClaim(token, Claims::getSubject);
-//    }
-//
-//    @Override
-//    public Long extractUserId(String token) {
-//        Claims claims = extractAllClaims(token);
-//        return claims.get("userId", Long.class);
-//    }
-
     @Override
     public String extractJti(String token) {
         Claims claims = extractAllClaims(token);
@@ -83,17 +69,6 @@ public class JwtService implements JwtServiceInterface {
     public Map<String, Object> extractRevoke(String token) {
         Claims claims = extractAllClaims(token);
         return Map.of("jti", claims.get("jti", String.class), "expiresAt", claims.getExpiration().toInstant());
-    }
-
-    @Override
-    public List<RoleType> extractRoles(String token) {
-        Claims claims = extractAllClaims(token);
-
-        List<String> roleNames = claims.get("roles", List.class);
-        if (roleNames == null || roleNames.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return roleNames.stream().map(RoleType::valueOf).toList();
     }
 
     @Override
