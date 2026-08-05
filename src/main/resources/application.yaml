@@ -9,6 +9,9 @@ app:
 spring:
   application:
     name: mstsoftware
+  #  threads:
+  #    virtual:
+  #      enabled: true
   profiles:
     active: local
   output:
@@ -49,8 +52,26 @@ spring:
           max-idle: 8
           min-idle: 2
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:changeme}
+    password: ${MAIL_PASSWORD:changeme}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 logging:
   level:
+    mst:
+      local:
+        mstsoftware: debug
     org:
       flywaydb: DEBUG
       hibernate:
