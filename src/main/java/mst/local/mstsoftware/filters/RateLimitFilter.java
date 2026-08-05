@@ -2,8 +2,9 @@ package mst.local.mstsoftware.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
+import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.Refill;
+import io.github.bucket4j.distributed.proxy.ProxyManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,31 +18,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
+    private final ProxyManager<String> proxyManager;
 
-    private Bucket newBucket() {
-        return Bucket.builder()
-                .addLimit(Bandwidth.classic(
-                        4,
-                        Refill.greedy(4, Duration.ofMinutes(1))
-                ))
+    private BucketConfiguration bucketConfig() {
+        final int MAX_LIMIT_REQUEST = 20;
+        return BucketConfiguration.builder()
+                .addLimit(Bandwidth.classic(MAX_LIMIT_REQUEST, Refill.greedy(MAX_LIMIT_REQUEST, Duration.ofMinutes(1))))
                 .build();
     }
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String key = "rate_limit:" + request.getRemoteAddr();
 
-        String ip = request.getRemoteAddr();
-        Bucket bucket = buckets.computeIfAbsent(ip, k -> newBucket());
-
+        var bucket = proxyManager.builder().build(key, this::bucketConfig);
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
         } else {
