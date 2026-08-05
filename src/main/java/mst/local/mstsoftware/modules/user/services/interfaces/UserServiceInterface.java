@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface UserServiceInterface {
     AuthResult authenticate(LoginRequest request);
 
-    AuthResult register(RegisterRequest request);
+    AuthResult register(RegisterRequest request, String ip);
 
     Optional<User> findById(Long userId);
 

@@ -19,6 +19,7 @@ import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterfa
 import mst.local.mstsoftware.services.impl.BaseService;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     private final AuthConfig authConfig;
     private final RoleRepository roleRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final RedisTemplate<String, Integer> redis;
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
@@ -75,7 +77,11 @@ public class UserService extends BaseService implements UserServiceInterface {
 
     @Override
     @Transactional
-    public AuthResult register(RegisterRequest request) {
+    public AuthResult register(RegisterRequest request, String ip) {
+        String key = "limit-creation:" + ip;
+        if (redis.opsForValue().get(key) >= 2) {
+            throw new BadCredentialsException("Đã vượt quá giới hạn đăng ký trong ngày!");
+        }
         String email = request.email();
         String phone = request.phone();
         if (userRepository.existsByEmail(email)) {
@@ -112,6 +118,7 @@ public class UserService extends BaseService implements UserServiceInterface {
         eventPublisher.publishEvent(
                 new UserRegisteredEvent(this, email, user.getName())
         );
+        redis.opsForValue().increment(key);
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
 
