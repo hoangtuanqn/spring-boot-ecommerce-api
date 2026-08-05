@@ -1,12 +1,13 @@
 package mst.local.mstsoftware.modules.user.services.impl;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.config.AuthConfig;
-import mst.local.mstsoftware.modules.user.entities.Role;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
 import mst.local.mstsoftware.modules.user.enums.RoleType;
+import mst.local.mstsoftware.modules.user.events.UserRegisteredEvent;
 import mst.local.mstsoftware.modules.user.repositories.RoleRepository;
 import mst.local.mstsoftware.modules.user.repositories.UserRepository;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
@@ -17,6 +18,7 @@ import mst.local.mstsoftware.modules.user.services.interfaces.RefreshTokenServic
 import mst.local.mstsoftware.modules.user.services.interfaces.UserServiceInterface;
 import mst.local.mstsoftware.services.impl.BaseService;
 import mst.local.mstsoftware.services.interfaces.JwtServiceInterface;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     private final UserSessionCache userSessionCache;
     private final AuthConfig authConfig;
     private final RoleRepository roleRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
@@ -71,6 +74,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     }
 
     @Override
+    @Transactional
     public AuthResult register(RegisterRequest request) {
         String email = request.email();
         String phone = request.phone();
@@ -84,7 +88,6 @@ public class UserService extends BaseService implements UserServiceInterface {
             throw new BadCredentialsException("Nhập lại mật khẩu không chính xác!");
         }
         String password = passwordEncoder.encode(request.password());
-        Role userRole = findOrThrow(roleRepository.findByName(RoleType.USER), "Role " + RoleType.USER + " không tồn tại trong hệ thống!");
         User user = userRepository.save(
                 User.builder()
                         .name(request.name())
@@ -93,11 +96,6 @@ public class UserService extends BaseService implements UserServiceInterface {
                         .phone(phone)
                         .build()
         );
-        UserRole normalUserRole = UserRole.builder()
-                .user(user)
-                .role(userRole)
-                .expiresAt(null)
-                .build();
         String accessToken = jwtService.generateToken(user.getId());
 
         Duration ttl = Duration.ofMillis(authConfig.getExpirationTime());
@@ -110,6 +108,10 @@ public class UserService extends BaseService implements UserServiceInterface {
                 .name(user.getName())
                 .phone(user.getPhone())
                 .build();
+
+        eventPublisher.publishEvent(
+                new UserRegisteredEvent(this, email, user.getName())
+        );
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
 
