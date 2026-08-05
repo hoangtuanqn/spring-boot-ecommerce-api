@@ -4,7 +4,7 @@ import org.springframework.http.ResponseCookie;
 
 import java.time.Duration;
 
-public class CookieUtils {
+public class CookieHelper {
     public static ResponseCookie buildRefreshTokenCookie(String token, Duration maxAge) {
         return ResponseCookie.from("refresh_token", token)
                 .httpOnly(true)

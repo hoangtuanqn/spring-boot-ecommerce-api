@@ -1,6 +1,5 @@
 package mst.local.mstsoftware.helpers;
 
-import mst.local.mstsoftware.filters.FilterParameter;
 import mst.local.mstsoftware.specifications.BaseSpecification;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +14,9 @@ import java.util.Map;
 public final class QuerySpecBuilder {
 
     public <T> Specification<T> buildSpecification(Map<String, String[]> parameters, String... searchFields) {
-        String keyword = FilterParameter.filterKeyword(parameters);
-        Map<String, String> filterSimple = FilterParameter.filterSimple(parameters);
-        Map<String, Map<String, String>> filterComplex = FilterParameter.filterComplex(parameters);
+        String keyword = FilterParameterHelper.filterKeyword(parameters);
+        Map<String, String> filterSimple = FilterParameterHelper.filterSimple(parameters);
+        Map<String, Map<String, String>> filterComplex = FilterParameterHelper.filterComplex(parameters);
         return Specification.where(
                         BaseSpecification.<T>keyword(keyword, searchFields)
                 ).and(BaseSpecification.<T>whereSpec(filterSimple))

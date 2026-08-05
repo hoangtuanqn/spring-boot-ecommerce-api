@@ -1,4 +1,4 @@
-package mst.local.mstsoftware.filters;
+package mst.local.mstsoftware.helpers;
 
 import org.springframework.util.StringUtils;
 
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class FilterParameter {
+public class FilterParameterHelper {
 
     // phân loại theo keyword
     public static String filterKeyword(Map<String, String[]> parameters) {
