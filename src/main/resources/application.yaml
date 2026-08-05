@@ -9,6 +9,9 @@ app:
 spring:
   application:
     name: mstsoftware
+  #  threads:
+  #    virtual:
+  #      enabled: true
   profiles:
     active: local
   output:
@@ -68,7 +71,7 @@ logging:
   level:
     mst:
       local:
-        mstsoftware: true
+        mstsoftware: debug
     org:
       flywaydb: DEBUG
       hibernate:
