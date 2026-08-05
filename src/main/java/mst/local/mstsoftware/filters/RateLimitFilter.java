@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.resources.ErrorResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -49,9 +50,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
         ErrorResource error = ErrorResource.builder()
-                .code("UNAUTHORIZED")
+                .code("TOO_MANY_REQUESTS")
                 .build();
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(objectMapper.writeValueAsString(ApiResource.error(error, message)));
