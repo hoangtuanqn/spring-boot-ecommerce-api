@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.filters.JwtAuthFilter;
 import mst.local.mstsoftware.helpers.CookieHelper;
+import mst.local.mstsoftware.helpers.IpHelper;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.requests.RegisterRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
@@ -52,8 +53,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResource<RegisterResource>> login(@Valid @RequestBody RegisterRequest request) {
-        AuthResult auth = userService.register(request);
+    public ResponseEntity<ApiResource<RegisterResource>> login(@Valid @RequestBody RegisterRequest request, HttpServletRequest req) {
+        AuthResult auth = userService.register(request, IpHelper.getClientIp(req));
         ResponseCookie refreshCookie = CookieHelper.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 
         RegisterResource body = new RegisterResource(auth.accessToken(), auth.user());

@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import mst.local.mstsoftware.helpers.IpHelper;
 import mst.local.mstsoftware.resources.ApiResource;
 import mst.local.mstsoftware.resources.ErrorResource;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String key = "rate_limit:" + request.getRemoteAddr();
+        String key = "rate_limit:" + IpHelper.getClientIp(request);
 
         var bucket = proxyManager.builder().build(key, this::bucketConfig);
         if (bucket.tryConsume(1)) {
