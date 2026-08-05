@@ -42,7 +42,7 @@ public class UserService extends BaseService implements UserServiceInterface {
     private final AuthConfig authConfig;
     private final RoleRepository roleRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final RedisTemplate<String, Integer> redis;
+    private final RedisTemplate<String, Object> redis;
 
     @Override
     public AuthResult authenticate(LoginRequest request) {
@@ -78,8 +78,11 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Override
     @Transactional
     public AuthResult register(RegisterRequest request, String ip) {
-        String key = "limit-creation:" + ip;
-        if (redis.opsForValue().get(key) >= 2) {
+        String key = "limit:register:" + ip;
+        Object cache = redis.opsForValue().get(key);
+        Long countReg = cache != null ? ((Number) cache).longValue() : 0;
+
+        if (countReg >= 2) {
             throw new BadCredentialsException("Đã vượt quá giới hạn đăng ký trong ngày!");
         }
         String email = request.email();
@@ -118,7 +121,10 @@ public class UserService extends BaseService implements UserServiceInterface {
         eventPublisher.publishEvent(
                 new UserRegisteredEvent(this, email, user.getName())
         );
-        redis.opsForValue().increment(key);
+        countReg = redis.opsForValue().increment(key);
+        if (countReg == 1) {
+            redis.expire(key, Duration.ofHours(24));
+        }
         return new AuthResult(accessToken, refreshToken.rawToken(), userResource);
     }
 
