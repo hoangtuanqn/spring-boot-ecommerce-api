@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.controllers.BaseController;
-import mst.local.mstsoftware.helpers.CookieUtils;
+import mst.local.mstsoftware.helpers.CookieHelper;
 import mst.local.mstsoftware.modules.user.entities.User;
 import mst.local.mstsoftware.modules.user.entities.UserRole;
 import mst.local.mstsoftware.modules.user.enums.RoleType;
@@ -57,7 +57,7 @@ public class UserController extends BaseController {
         String newAccessToken = jwtService.generateToken(result.userId());
         userSessionCache.set(user.getId(), user.getEmail(), roles, Duration.ofMillis(authConfig.getExpirationTime()));
 
-        ResponseCookie cookie = CookieUtils.buildRefreshTokenCookie(result.newRefreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
+        ResponseCookie cookie = CookieHelper.buildRefreshTokenCookie(result.newRefreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())

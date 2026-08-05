@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.config.AuthConfig;
 import mst.local.mstsoftware.filters.JwtAuthFilter;
-import mst.local.mstsoftware.helpers.CookieUtils;
+import mst.local.mstsoftware.helpers.CookieHelper;
 import mst.local.mstsoftware.modules.user.requests.LoginRequest;
 import mst.local.mstsoftware.modules.user.requests.RegisterRequest;
 import mst.local.mstsoftware.modules.user.resources.AuthResult;
@@ -43,7 +43,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResource<LoginResource>> login(@Valid @RequestBody LoginRequest request) {
         AuthResult auth = userService.authenticate(request);
-        ResponseCookie refreshCookie = CookieUtils.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
+        ResponseCookie refreshCookie = CookieHelper.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 
         LoginResource body = new LoginResource(auth.accessToken(), auth.user());
         return ResponseEntity.ok()
@@ -54,7 +54,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResource<RegisterResource>> login(@Valid @RequestBody RegisterRequest request) {
         AuthResult auth = userService.register(request);
-        ResponseCookie refreshCookie = CookieUtils.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
+        ResponseCookie refreshCookie = CookieHelper.buildRefreshTokenCookie(auth.refreshToken(), Duration.ofDays(authConfig.getRefreshTokenTTLDays()));
 
         RegisterResource body = new RegisterResource(auth.accessToken(), auth.user());
         return ResponseEntity.ok()
@@ -74,7 +74,7 @@ public class AuthController {
         blacklistService.revoke((String) items.get("jti"), (Instant) items.get("expiresAt"));
         // revoked refresh token
         refreshTokenService.revokeToken(refreshTokenRaw);
-        ResponseCookie clearCookie = CookieUtils.buildRefreshTokenCookie(null, Duration.ZERO);
+        ResponseCookie clearCookie = CookieHelper.buildRefreshTokenCookie(null, Duration.ZERO);
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, clearCookie.toString())
                 .body(ApiResource.success(null, "Logout thành công!"));
