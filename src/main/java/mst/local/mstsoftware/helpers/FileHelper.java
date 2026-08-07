@@ -38,7 +38,7 @@ public class FileHelper {
 
     public boolean removeFile(String filePath) {
         try {
-            String relativePath = filePath.replaceFirst("^/upload/", "");
+            String relativePath = filePath.replaceFirst("^/" + uploadDir, "");
             Path file = Paths.get(uploadDir + relativePath);
             return Files.deleteIfExists(file);
         } catch (IOException e) {
