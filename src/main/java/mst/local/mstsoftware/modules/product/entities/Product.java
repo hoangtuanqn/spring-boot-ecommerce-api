@@ -2,9 +2,11 @@ package mst.local.mstsoftware.modules.product.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mst.local.mstsoftware.converts.StringListConverter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,6 +39,11 @@ public class Product {
     private BigDecimal price = BigDecimal.ZERO;
 
     private Integer quantity = 0;
+
+    @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "JSON")
+    private List<String> images;
+
     private Instant createdAt;
     private Instant updatedAt;
 

@@ -1,8 +1,10 @@
 package mst.local.mstsoftware.modules.product.requests;
 
 import jakarta.validation.constraints.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record CreateProductRequest(
         @NotBlank(message = "Tên sản phẩm không được để trống!")
@@ -22,6 +24,8 @@ public record CreateProductRequest(
         @NotNull(message = "Số lượng không được để trống!")
         @Min(value = 0, message = "Số lượng phải lớn hơn 0!")
         @Max(value = 10_000, message = "Số lượng phải nhỏ hơn 10.000!")
-        Integer quantity
+        Integer quantity,
+
+        List<MultipartFile> photos
 ) {
 }

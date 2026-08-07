@@ -6,6 +6,8 @@ server:
 app:
   schedule:
     refresh-token-cleanup: "0 0 2 * * *"
+  upload:
+    dir: uploads
 spring:
   application:
     name: mstsoftware
@@ -48,7 +50,11 @@ spring:
           max-active: 16
           max-idle: 8
           min-idle: 2
-
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  
   mail:
     host: smtp.gmail.com
     port: 587
