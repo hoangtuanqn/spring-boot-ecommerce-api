@@ -3,6 +3,7 @@ package mst.local.mstsoftware.modules.product.services.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import mst.local.mstsoftware.helpers.CrudValidationHelpers;
+import mst.local.mstsoftware.helpers.FileHelper;
 import mst.local.mstsoftware.helpers.QuerySpecBuilder;
 import mst.local.mstsoftware.modules.product.entities.Product;
 import mst.local.mstsoftware.modules.product.mappers.ProductMapper;
@@ -30,6 +31,7 @@ public class ProductService extends BaseService implements ProductServiceInterfa
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final QuerySpecBuilder specBuilder;
+    private final FileHelper fileHelper;
 
 
     @Override
@@ -37,6 +39,8 @@ public class ProductService extends BaseService implements ProductServiceInterfa
         var category = findOrThrow(categoryRepository.findById(productRequest.categoryId()), "Danh mục không tồn tại!");
         Product product = productMapper.toEntity(productRequest);
         product.setCategory(category);
+        List<String> paths = fileHelper.uploadFile(productRequest.photos(), "products");
+        product.setImages(paths);
         return productMapper.toResource(productRepository.save(product));
     }
 

@@ -5,6 +5,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,6 +15,7 @@ public record ProductResource(
         String description,
         BigDecimal price,
         Integer quantity,
+        List<String> images,
         Instant createdAt
 ) {
 }

@@ -37,7 +37,7 @@ public class ProductController extends BaseController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('PRODUCT:CREATE')")
-    public ResponseEntity<ApiResource<ProductResource>> store(@Valid @RequestBody CreateProductRequest request) {
+    public ResponseEntity<ApiResource<ProductResource>> store(@Valid @ModelAttribute CreateProductRequest request) {
         return created(productService.store(request), "Thêm sản phẩm mới thành công!");
     }
 
