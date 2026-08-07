@@ -1,5 +1,6 @@
 package mst.local.mstsoftware.helpers;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,11 +15,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class UploadHelper {
+public class FileHelper {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    public ArrayList<String> uploadFile(List<MultipartFile> files, String source) throws IOException {
+    @SneakyThrows
+    public ArrayList<String> uploadFile(List<MultipartFile> files, String source) {
         var paths = new ArrayList<String>();
         final String normalizedPath = (source.charAt(0) == '/' ? source : "/" + source).toLowerCase();
 
@@ -29,9 +31,24 @@ public class UploadHelper {
             String fileName = UUID.randomUUID() + ext;
             Files.copy(file.getInputStream(), dir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
 
-            paths.add("/uploads" + normalizedPath + "/" + fileName);
+            paths.add("/" + uploadDir + normalizedPath + "/" + fileName);
         }
         return paths;
+    }
+
+    public boolean removeFile(String filePath) {
+        try {
+            String relativePath = filePath.replaceFirst("^/upload/", "");
+            Path file = Paths.get(uploadDir + relativePath);
+            return Files.deleteIfExists(file);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @SneakyThrows
+    public void removeFiles(List<String> filePaths) {
+        filePaths.forEach(this::removeFile);
     }
 
     private String getExtension(String fileName) {
