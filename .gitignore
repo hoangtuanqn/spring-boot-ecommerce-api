@@ -13,6 +13,7 @@ logs/
 *.log
 activemq-data/
 HS_ERR_PID*
+uploads/
 
 target/
 !**/src/main/**/target/
