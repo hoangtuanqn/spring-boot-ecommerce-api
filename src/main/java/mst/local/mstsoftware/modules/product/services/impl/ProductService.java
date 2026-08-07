@@ -39,7 +39,7 @@ public class ProductService extends BaseService implements ProductServiceInterfa
         var category = findOrThrow(categoryRepository.findById(productRequest.categoryId()), "Danh mục không tồn tại!");
         Product product = productMapper.toEntity(productRequest);
         product.setCategory(category);
-        List<String> paths = fileHelper.uploadFile(productRequest.photos(), "products");
+        List<String> paths = fileHelper.uploadFile(productRequest.images(), "products");
         product.setImages(paths);
         return productMapper.toResource(productRepository.save(product));
     }

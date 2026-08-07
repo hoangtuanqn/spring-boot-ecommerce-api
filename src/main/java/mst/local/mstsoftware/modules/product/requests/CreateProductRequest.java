@@ -26,6 +26,6 @@ public record CreateProductRequest(
         @Max(value = 10_000, message = "Số lượng phải nhỏ hơn 10.000!")
         Integer quantity,
 
-        List<MultipartFile> photos
+        List<MultipartFile> images
 ) {
 }
