@@ -6,8 +6,8 @@ server:
 app:
   schedule:
     refresh-token-cleanup: "0 0 2 * * *"
-    upload:
-      dir: uploads
+  upload:
+    dir: uploads
 spring:
   application:
     name: mstsoftware
