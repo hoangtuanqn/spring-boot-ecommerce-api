@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,8 +55,25 @@ public class ProductService extends BaseService implements ProductServiceInterfa
     public ProductResource update(Long id, UpdateProductRequest productRequest) {
         var product = findOrThrow(productRepository.findById(id), "Sản phẩm này không tồn tại!");
         var category = findOrThrow(categoryRepository.findById(productRequest.categoryId()), "Danh mục không tồn tại!");
+        List<String> currentImages = product.getImages();
+        List<String> existingImages = productRequest.existingImages() != null
+                ? productRequest.existingImages()
+                : new ArrayList<>();
+        List<String> removedImages = currentImages.stream().filter(image -> !existingImages.contains(image)).toList();
+        fileHelper.removeFiles(removedImages);
+        List<String> uploadedImages = new ArrayList<>();
+        if (productRequest.newImages() != null && !productRequest.newImages().isEmpty()) {
+            uploadedImages = fileHelper.uploadFile(productRequest.newImages(), "products");
+        }
+
+        List<String> finalImages = new ArrayList<>();
+        finalImages.addAll(existingImages);
+        finalImages.addAll(uploadedImages);
+
+        product.setImages(finalImages);
         productMapper.updateEntity(productRequest, product);
         product.setCategory(category);
+
         return productMapper.toResource(productRepository.save(product));
     }
 
