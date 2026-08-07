@@ -19,8 +19,13 @@ public class FileHelper {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
+    private static final List<String> ALLOWED_EXTENSIONS = List.of(".jpg", ".jpeg", ".png", ".webp");
+    private static final int MIN_FILES = 1, MAX_FILES = 3;
+
     @SneakyThrows
     public ArrayList<String> uploadFile(List<MultipartFile> files, String source) {
+        validateFiles(files);
+
         var paths = new ArrayList<String>();
         final String normalizedPath = (source.charAt(0) == '/' ? source : "/" + source).toLowerCase();
 
@@ -53,5 +58,23 @@ public class FileHelper {
 
     private String getExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
+    }
+
+    private void validateFiles(List<MultipartFile> files) {
+        if (files.size() < MIN_FILES) {
+            throw new IllegalArgumentException("Tối thiểu " + MIN_FILES + " ảnh");
+        }
+        if (files.size() > MAX_FILES) {
+            throw new IllegalArgumentException("Tối đa " + MAX_FILES + " ảnh");
+        }
+        for (var file : files) {
+            String ext = getExtension(file.getOriginalFilename());
+            if (!ALLOWED_EXTENSIONS.contains(ext)) {
+                throw new IllegalArgumentException(
+                        "Định dạng không hợp lệ: " + ext + ". Chỉ chấp nhận: " + ALLOWED_EXTENSIONS
+                );
+            }
+        }
+
     }
 }
