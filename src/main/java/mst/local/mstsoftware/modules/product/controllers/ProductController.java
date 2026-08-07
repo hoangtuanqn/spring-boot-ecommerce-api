@@ -43,7 +43,7 @@ public class ProductController extends BaseController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('PRODUCT:CREATE')")
-    public ResponseEntity<ApiResource<ProductResource>> update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
+    public ResponseEntity<ApiResource<ProductResource>> update(@PathVariable Long id, @Valid @ModelAttribute UpdateProductRequest request) {
         return ok(productService.update(id, request), "Cập nhật sản phẩm thành công!");
     }
 
