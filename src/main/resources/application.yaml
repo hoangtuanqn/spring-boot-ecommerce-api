@@ -6,6 +6,7 @@ server:
 app:
   schedule:
     refresh-token-cleanup: "0 0 2 * * *"
+    sepay-payment: "*/10 * * * * *"
   upload:
     dir: uploads
 spring:
@@ -87,3 +88,6 @@ jwt:
   expiration: 900000
   issuer: https://mstsoftware.vn/
   refresh-token-ttl-days: 14
+sepay:
+  base-url: https://my.sepay.vn/userapi
+  api-token: ${TOKEN_SEPAY:changeme}
